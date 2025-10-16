@@ -3,10 +3,10 @@ const http = require('http');
 const cors = require('cors');
 const { Server } = require('socket.io');
 
-const { connectMongo, isMongoConnected } = require('./config/database');
-const Cliente = require('./models/cliente');
-const Pedido = require('./models/pedido');
-const Produto = require('./models/produto');
+const { connectMongo, isMongoConnected } = require('../config/database');
+const Cliente = require('../models/cliente');
+const Pedido = require('../models/pedido');
+const Produto = require('../models/produto');
 const {
 	pedidosMemoria,
 	produtosMemoria,
@@ -14,19 +14,19 @@ const {
 	botConfigMemoria,
 	tableConfigMemoria,
 	generalConfigMemoria
-} = require('./storage/memoryStore');
-const { createNlpManager, trainAndSave } = require('./services/nlpService');
-const WhatsAppService = require('./services/whatsappService');
-const { registerSocketService } = require('./services/socketService');
-const pedidoService = require('./services/pedidoService');
-const produtoService = require('./services/produtoService');
-const clienteService = require('./services/clienteService');
-const { createPedidosRouter } = require('./routes/pedidos');
-const { createProdutosRouter } = require('./routes/produtos');
-const { createClientesRouter } = require('./routes/clientes');
-const { createConfigRouter } = require('./routes/config');
-const { createWhatsAppRouter } = require('./routes/whatsapp');
-const { createUtilRouter } = require('./routes/util');
+} = require('../storage/memoryStore');
+const { createNlpManager, trainAndSave } = require('../services/nlpService');
+const WhatsAppService = require('../services/whatsappService');
+const { registerSocketService } = require('../services/socketService');
+const pedidoService = require('../services/pedidoService');
+const produtoService = require('../services/produtoService');
+const clienteService = require('../services/clienteService');
+const { createPedidosRouter } = require('../routes/pedidos');
+const { createProdutosRouter } = require('../routes/produtos');
+const { createClientesRouter } = require('../routes/clientes');
+const { createConfigRouter } = require('../routes/config');
+const { createWhatsAppRouter } = require('../routes/whatsapp');
+const { createUtilRouter } = require('../routes/util');
 const ChatbotFlowModule = require('./chatbot-flow');
 const ChatbotHandlers = require('./chatbot-handlers');
 
