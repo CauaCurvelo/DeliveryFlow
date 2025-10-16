@@ -5,6 +5,8 @@
   "main": "core/index.js",
   "scripts": {
     "start": "node core/index.js",
+    "clear-session": "node scripts/clear-whatsapp-session.js",
+    "fresh-start": "node scripts/clear-whatsapp-session.js && node core/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

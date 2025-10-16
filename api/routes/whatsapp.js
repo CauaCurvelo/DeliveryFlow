@@ -32,6 +32,22 @@ function createWhatsAppRouter({ whatsappService }) {
     }
   });
 
+  router.post('/clear-session', async (req, res) => {
+    try {
+      console.log('🧹 Recebida requisição para limpar sessão do WhatsApp');
+      const cleaned = await whatsappService.cleanAuthSession();
+      res.json({ 
+        success: cleaned,
+        message: cleaned 
+          ? 'Sessão limpa com sucesso. Use /reconnect para iniciar uma nova conexão.' 
+          : 'Nenhuma sessão encontrada para limpar.'
+      });
+    } catch (error) {
+      console.error('❌ Erro ao limpar sessão:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return router;
 }
 
