@@ -1,0 +1,109 @@
+
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Admin Chatbot Frontend</title>
+      <!-- Socket.io client -->
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
+      <script>
+        // Captura de erros para debug (apenas log, sem UI intrusiva)
+        window.addEventListener('error', function(e) {
+          console.error('❌ ERRO GLOBAL:', e.message, e.filename, e.lineno, e.colno);
+        });
+        
+        window.addEventListener('unhandledrejection', function(e) {
+          console.error('❌ PROMISE REJEITADA:', e.reason);
+        });
+        
+        console.log('🚀 index.html carregado - aguardando scripts...');
+        console.log('📡 Socket.io disponível:', typeof io !== 'undefined');
+      </script>
+    </head>
+
+    <body>
+      <div id="root"></div>
+      <script>
+        console.log('📍 Body carregado, #root existe:', !!document.getElementById('root'));
+        
+        if (window.Cypress) {
+          window.io = function() { return { on: () => {}, emit: () => {}, disconnect: () => {} }; };
+          // Dados mockados inline para ambiente Cypress
+          window.mockOrders = [
+            {
+              id: 'ORD-001',
+              customerName: 'Maria Silva',
+              customerPhone: '(11) 98765-4321',
+              items: [
+                { id: '1', productId: 'P1', name: 'Pizza Margherita G', quantity: 1, price: 45.00 },
+                { id: '2', productId: 'P5', name: 'Refrigerante 2L', quantity: 1, price: 10.00 }
+              ],
+              total: 55.00,
+              status: 'pending',
+              paymentMethod: 'pix',
+              deliveryMode: 'delivery',
+              address: 'Rua das Flores, 123 - Apto 45',
+              notes: 'Sem cebola',
+              createdAt: new Date(Date.now() - 5 * 60000),
+              updatedAt: new Date(Date.now() - 5 * 60000),
+            },
+            // ... (demais pedidos do mock)
+          ];
+          window.mockProducts = [
+            {
+              id: 'P1',
+              name: 'Pizza Margherita G',
+              description: 'Molho de tomate, mussarela, manjericão fresco e azeite',
+              price: 45.00,
+              category: 'Pizzas',
+              image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400',
+              active: true,
+              createdAt: new Date(Date.now() - 7 * 24 * 60 * 60000),
+            },
+            // ... (demais produtos do mock)
+          ];
+          function serializeDates(arr) {
+            return arr.map(obj => {
+              const newObj = { ...obj };
+              if (newObj.createdAt) newObj.createdAt = newObj.createdAt.toISOString ? newObj.createdAt.toISOString() : newObj.createdAt;
+              if (newObj.updatedAt) newObj.updatedAt = newObj.updatedAt.toISOString ? newObj.updatedAt.toISOString() : newObj.updatedAt;
+              if (Array.isArray(newObj.items)) {
+                newObj.items = newObj.items.map(item => {
+                  const itemCopy = { ...item };
+                  if (itemCopy.createdAt) itemCopy.createdAt = itemCopy.createdAt.toISOString ? itemCopy.createdAt.toISOString() : itemCopy.createdAt;
+                  if (itemCopy.updatedAt) itemCopy.updatedAt = itemCopy.updatedAt.toISOString ? itemCopy.updatedAt.toISOString() : itemCopy.updatedAt;
+                  return itemCopy;
+                });
+              }
+              return newObj;
+            });
+          }
+          window.fetch = (input, init) => {
+            const response = {
+              ok: true,
+              status: 200,
+              statusText: 'OK',
+              headers: {},
+              redirected: false,
+              type: 'basic',
+              url: typeof input === 'string' ? input : '',
+              json: () => Promise.resolve([]),
+              text: () => Promise.resolve('[]'),
+            };
+            if (typeof input === 'string' && (input.includes('/api/orders') || input.includes('/api/pedidos'))) {
+              response.json = () => Promise.resolve(serializeDates(window.mockOrders));
+              response.text = () => Promise.resolve(JSON.stringify(serializeDates(window.mockOrders)));
+            }
+            if (typeof input === 'string' && (input.includes('/api/products') || input.includes('/api/produtos'))) {
+              response.json = () => Promise.resolve(serializeDates(window.mockProducts));
+              response.text = () => Promise.resolve(JSON.stringify(serializeDates(window.mockProducts)));
+            }
+            return Promise.resolve(response);
+          };
+        }
+      </script>
+      <script type="module" src="/src/main.tsx"></script>
+    </body>
+  </html>
+  
