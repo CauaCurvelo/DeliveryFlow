@@ -26,7 +26,7 @@ npm install
 	- Usar um serviço de MongoDB na nuvem (ex: Atlas, Render, etc).
 - No arquivo `.env` da pasta `api`, configure a variável `MONGODB_URI` com a string de conexão do seu banco.
 	- Exemplo para local: `MONGODB_URI=mongodb://localhost:27017/deliveryflow`
-	- Exemplo para Atlas: `MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/deliveryflow`
+	- Exemplo para Atlas: `MONGODB_URI=mongodb+srv://<usuario>:<senha>@<cluster>.mongodb.net/deliveryflow`
 
 4. **Rodando o backend:**
 ```bash
