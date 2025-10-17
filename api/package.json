@@ -7,20 +7,25 @@
     "start": "node core/index.js",
     "clear-session": "node scripts/clear-whatsapp-session.js",
     "fresh-start": "node scripts/clear-whatsapp-session.js && node core/index.js",
+    "fix-whatsapp": "node scripts/fix-whatsapp-connection.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "fuse.js": "^7.0.0",
     "mongoose": "^8.19.1",
-    "node-nlp": "^3.10.2",
+    "node-nlp": "^5.0.0-alpha.5",
     "puppeteer": "^24.25.0",
     "qrcode-terminal": "^0.12.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "socket.io": "^4.8.1",
-    "whatsapp-web.js": "^1.23.0"
+    "whatsapp-web.js": "^1.34.1"
   }
 }

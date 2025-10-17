@@ -21,6 +21,7 @@ class WhatsAppService {
     this.initializationAttempts = 0;
     this.maxInitializationAttempts = 3;
     this.qrCodeTimeout = null;
+    this.syncTimeout = null;
   }
 
   isReady() {
@@ -91,9 +92,10 @@ class WhatsAppService {
           '--no-zygote',
           '--disable-gpu',
           '--disable-software-rasterizer',
-          '--disable-extensions'
+          '--disable-extensions',
+          '--disable-features=VizDisplayCompositor'
         ],
-        timeout: 120000,
+        timeout: 180000,
         handleSIGINT: false,
         handleSIGTERM: false,
         handleSIGHUP: false
@@ -102,7 +104,10 @@ class WhatsAppService {
         remotePath: WA_CACHE_URLS[this.waCacheIndex],
         type: 'remote'
       },
-      qrMaxRetries: 5
+      qrMaxRetries: 5,
+      authTimeoutMs: 180000,
+      takeoverOnConflict: true,
+      takeoverTimeoutMs: 0
     });
   }
 
@@ -116,10 +121,14 @@ class WhatsAppService {
       }
     }
 
-    // Limpar timeout do QR Code anterior
+    // Limpar todos os timeouts
     if (this.qrCodeTimeout) {
       clearTimeout(this.qrCodeTimeout);
       this.qrCodeTimeout = null;
+    }
+    if (this.syncTimeout) {
+      clearTimeout(this.syncTimeout);
+      this.syncTimeout = null;
     }
 
     this.client = this.createClient();
@@ -185,10 +194,14 @@ class WhatsAppService {
       this.whatsappReady = true;
       const totalTime = ((Date.now() - startTime) / 1000).toFixed(2);
       
-      // Limpar timeout do QR Code
+      // Limpar timeouts
       if (this.qrCodeTimeout) {
         clearTimeout(this.qrCodeTimeout);
         this.qrCodeTimeout = null;
+      }
+      if (this.syncTimeout) {
+        clearTimeout(this.syncTimeout);
+        this.syncTimeout = null;
       }
       
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -259,6 +272,21 @@ class WhatsAppService {
     this.client.on('loading_screen', (percent, message) => {
       console.log(`[WhatsApp] Carregando: ${percent}% - ${message}`);
       logStep(`Carregando WhatsApp: ${percent}% - ${message}`);
+      this.io.emit('whatsapp-loading', { percent, message });
+      
+      // Se ficar preso em "sincronizando" por muito tempo, reconectar
+      if (message.toLowerCase().includes('sincronizando') || message.toLowerCase().includes('syncing')) {
+        if (this.syncTimeout) {
+          clearTimeout(this.syncTimeout);
+        }
+        
+        this.syncTimeout = setTimeout(() => {
+          if (!this.whatsappReady) {
+            console.log('⚠️ WhatsApp preso em sincronização. Reiniciando conexão...');
+            this.reconnect();
+          }
+        }, 45000); // 45 segundos de timeout para sincronização
+      }
     });
 
     this.client.on('change_state', (state) => {
@@ -365,10 +393,14 @@ class WhatsAppService {
   async reconnect() {
     console.log('🔄 Iniciando processo de reconexão...');
     
-    // Limpar timeout do QR Code
+    // Limpar todos os timeouts
     if (this.qrCodeTimeout) {
       clearTimeout(this.qrCodeTimeout);
       this.qrCodeTimeout = null;
+    }
+    if (this.syncTimeout) {
+      clearTimeout(this.syncTimeout);
+      this.syncTimeout = null;
     }
 
     if (this.client) {

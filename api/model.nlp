@@ -3,105 +3,105 @@
     "languages": [
       "pt"
     ],
-    "forceNER": true
+    "forceNER": true,
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
   },
   "nluManager": {
-    "settings": {},
-    "languages": [
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
       "pt"
     ],
-    "intentDomains": {},
+    "languageNames": {},
     "domainManagers": {
       "pt": {
         "settings": {
-          "language": "pt",
-          "useNoneFeature": true,
-          "config": {
-            "activation": "leaky-relu",
-            "hiddenLayers": [],
-            "iterations": 20000,
-            "learningRate": 0.7,
-            "errorThresh": 0.00005,
-            "momentum": 0.5,
-            "deltaErrorThresh": 0.000001,
-            "maxDecimals": 9,
-            "leakyReluAlpha": 0.08,
-            "timeout": 120000
-          }
+          "locale": "pt",
+          "trainByDomain": false,
+          "tag": "domain-manager-pt",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
         },
-        "language": "pt",
-        "nluClassName": "BrainNLU",
-        "useMasterDomain": true,
-        "trainByDomain": false,
-        "keepStopwords": true,
         "stemDict": {
           "ped,pizz,quer,uma": {
-            "domain": "default",
-            "intent": "pedido.pizza"
+            "intent": "pedido.pizza",
+            "domain": "default"
           },
           "pizz,quer,uma": {
-            "domain": "default",
-            "intent": "pedido.pizza"
+            "intent": "pedido.pizza",
+            "domain": "default"
           },
           "margherit,pizz": {
-            "domain": "default",
-            "intent": "pedido.pizza"
+            "intent": "pedido.pizza",
+            "domain": "default"
           },
           "de,gost,hamburgu,um": {
-            "domain": "default",
-            "intent": "pedido.hamburguer"
+            "intent": "pedido.hamburguer",
+            "domain": "default"
           },
           "burg,quer,um": {
-            "domain": "default",
-            "intent": "pedido.hamburguer"
+            "intent": "pedido.hamburguer",
+            "domain": "default"
           },
           "burg,x": {
-            "domain": "default",
-            "intent": "pedido.hamburguer"
+            "intent": "pedido.hamburguer",
+            "domain": "default"
           },
           "coc,quer,uma": {
-            "domain": "default",
-            "intent": "pedido.bebida"
+            "intent": "pedido.bebida",
+            "domain": "default"
           },
           "refriger": {
-            "domain": "default",
-            "intent": "pedido.bebida"
+            "intent": "pedido.bebida",
+            "domain": "default"
           },
           "faz,ped": {
-            "domain": "default",
-            "intent": "pedido.generic"
+            "intent": "pedido.generic",
+            "domain": "default"
           },
           "ped,quer": {
-            "domain": "default",
-            "intent": "pedido.generic"
+            "intent": "pedido.generic",
+            "domain": "default"
           },
           "cardapi": {
-            "domain": "default",
-            "intent": "cardapio"
+            "intent": "cardapio",
+            "domain": "default"
           },
           "menu": {
-            "domain": "default",
-            "intent": "cardapio"
+            "intent": "cardapio",
+            "domain": "default"
           },
           "o,que,tem": {
-            "domain": "default",
-            "intent": "cardapio"
+            "intent": "cardapio",
+            "domain": "default"
           },
           "cust,quant": {
-            "domain": "default",
-            "intent": "preco"
+            "intent": "preco",
+            "domain": "default"
           },
           "o,qual,valor": {
-            "domain": "default",
-            "intent": "preco"
+            "intent": "preco",
+            "domain": "default"
           },
           "atendent,com,fal": {
-            "domain": "default",
-            "intent": "humano"
+            "intent": "humano",
+            "domain": "default"
           },
           "algu,com,fal,quer": {
-            "domain": "default",
-            "intent": "humano"
+            "intent": "humano",
+            "domain": "default"
           }
         },
         "intentDict": {
@@ -113,526 +113,552 @@
           "preco": "default",
           "humano": "default"
         },
-        "useStemDict": true,
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "quero pedir uma pizza",
+            "intent": "pedido.pizza"
+          },
+          {
+            "domain": "default",
+            "utterance": "quero uma pizza",
+            "intent": "pedido.pizza"
+          },
+          {
+            "domain": "default",
+            "utterance": "pizza margherita",
+            "intent": "pedido.pizza"
+          },
+          {
+            "domain": "default",
+            "utterance": "gostaria de um hambúrguer",
+            "intent": "pedido.hamburguer"
+          },
+          {
+            "domain": "default",
+            "utterance": "quero um burger",
+            "intent": "pedido.hamburguer"
+          },
+          {
+            "domain": "default",
+            "utterance": "x-burger",
+            "intent": "pedido.hamburguer"
+          },
+          {
+            "domain": "default",
+            "utterance": "quero uma coca",
+            "intent": "pedido.bebida"
+          },
+          {
+            "domain": "default",
+            "utterance": "refrigerante",
+            "intent": "pedido.bebida"
+          },
+          {
+            "domain": "default",
+            "utterance": "fazer pedido",
+            "intent": "pedido.generic"
+          },
+          {
+            "domain": "default",
+            "utterance": "quero pedir",
+            "intent": "pedido.generic"
+          },
+          {
+            "domain": "default",
+            "utterance": "cardápio",
+            "intent": "cardapio"
+          },
+          {
+            "domain": "default",
+            "utterance": "menu",
+            "intent": "cardapio"
+          },
+          {
+            "domain": "default",
+            "utterance": "o que tem?",
+            "intent": "cardapio"
+          },
+          {
+            "domain": "default",
+            "utterance": "quanto custa",
+            "intent": "preco"
+          },
+          {
+            "domain": "default",
+            "utterance": "qual o valor",
+            "intent": "preco"
+          },
+          {
+            "domain": "default",
+            "utterance": "falar com atendente",
+            "intent": "humano"
+          },
+          {
+            "domain": "default",
+            "utterance": "quero falar com alguém",
+            "intent": "humano"
+          }
+        ],
         "domains": {
           "master_domain": {
             "settings": {
-              "language": "pt",
-              "useNoneFeature": true,
-              "config": {
-                "activation": "leaky-relu",
-                "hiddenLayers": [],
-                "iterations": 20000,
-                "learningRate": 0.7,
-                "errorThresh": 0.00005,
-                "momentum": 0.5,
-                "deltaErrorThresh": 0.000001,
-                "maxDecimals": 9,
-                "leakyReluAlpha": 0.08,
-                "timeout": 120000
-              }
+              "locale": "pt",
+              "tag": "nlu-pt",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
             },
-            "language": "pt",
-            "keepStopwords": true,
-            "docs": [
-              {
-                "intent": "pedido.pizza",
-                "tokens": [
-                  "quer",
-                  "ped",
-                  "uma",
-                  "pizz"
-                ]
-              },
-              {
-                "intent": "pedido.pizza",
-                "tokens": [
-                  "quer",
-                  "uma",
-                  "pizz"
-                ]
-              },
-              {
-                "intent": "pedido.pizza",
-                "tokens": [
-                  "pizz",
-                  "margherit"
-                ]
-              },
-              {
-                "intent": "pedido.hamburguer",
-                "tokens": [
-                  "gost",
-                  "de",
-                  "um",
-                  "hamburgu"
-                ]
-              },
-              {
-                "intent": "pedido.hamburguer",
-                "tokens": [
-                  "quer",
-                  "um",
-                  "burg"
-                ]
-              },
-              {
-                "intent": "pedido.hamburguer",
-                "tokens": [
-                  "x",
-                  "burg"
-                ]
-              },
-              {
-                "intent": "pedido.bebida",
-                "tokens": [
-                  "quer",
-                  "uma",
-                  "coc"
-                ]
-              },
-              {
-                "intent": "pedido.bebida",
-                "tokens": [
-                  "refriger"
-                ]
-              },
-              {
-                "intent": "pedido.generic",
-                "tokens": [
-                  "faz",
-                  "ped"
-                ]
-              },
-              {
-                "intent": "pedido.generic",
-                "tokens": [
-                  "quer",
-                  "ped"
-                ]
-              },
-              {
-                "intent": "cardapio",
-                "tokens": [
-                  "cardapi"
-                ]
-              },
-              {
-                "intent": "cardapio",
-                "tokens": [
-                  "menu"
-                ]
-              },
-              {
-                "intent": "cardapio",
-                "tokens": [
-                  "o",
-                  "que",
-                  "tem"
-                ]
-              },
-              {
-                "intent": "preco",
-                "tokens": [
-                  "quant",
-                  "cust"
-                ]
-              },
-              {
-                "intent": "preco",
-                "tokens": [
-                  "qual",
-                  "o",
-                  "valor"
-                ]
-              },
-              {
-                "intent": "humano",
-                "tokens": [
-                  "fal",
-                  "com",
-                  "atendent"
-                ]
-              },
-              {
-                "intent": "humano",
-                "tokens": [
-                  "quer",
-                  "fal",
-                  "com",
-                  "algu"
-                ]
-              }
-            ],
             "features": {
-              "quer": 6,
-              "ped": 3,
-              "uma": 3,
-              "pizz": 3,
+              "quer": 1,
+              "ped": 1,
+              "uma": 1,
+              "pizz": 1,
               "margherit": 1,
               "gost": 1,
               "de": 1,
-              "um": 2,
+              "um": 1,
               "hamburgu": 1,
-              "burg": 2,
+              "burg": 1,
               "x": 1,
               "coc": 1,
               "refriger": 1,
               "faz": 1,
               "cardapi": 1,
               "menu": 1,
-              "o": 2,
+              "o": 1,
               "que": 1,
               "tem": 1,
               "quant": 1,
               "cust": 1,
               "qual": 1,
               "valor": 1,
-              "fal": 2,
-              "com": 2,
+              "fal": 1,
+              "com": 1,
               "atendent": 1,
               "algu": 1
             },
-            "isEditing": false,
-            "className": "BrainNLU",
-            "classifier": {
-              "className": "BrainClassifier",
-              "settings": {
-                "language": "pt",
-                "useNoneFeature": true,
-                "config": {
-                  "activation": "leaky-relu",
-                  "hiddenLayers": [],
-                  "iterations": 20000,
-                  "learningRate": 0.7,
-                  "errorThresh": 0.00005,
-                  "momentum": 0.5,
-                  "deltaErrorThresh": 0.000001,
-                  "maxDecimals": 9,
-                  "leakyReluAlpha": 0.08,
-                  "timeout": 120000
-                }
+            "intents": {
+              "pedido.pizza": 1,
+              "pedido.hamburguer": 1,
+              "pedido.bebida": 1,
+              "pedido.generic": 1,
+              "cardapio": 1,
+              "preco": 1,
+              "humano": 1
+            },
+            "intentFeatures": {
+              "pedido.pizza": {
+                "quer": 1,
+                "ped": 1,
+                "uma": 1,
+                "pizz": 1,
+                "margherit": 1
               },
-              "labels": [],
-              "network": {
-                "sizes": [
-                  28,
-                  8
-                ],
-                "layers": [
-                  {
-                    "quer": {},
-                    "ped": {},
-                    "uma": {},
-                    "pizz": {},
-                    "margherit": {},
-                    "gost": {},
-                    "de": {},
-                    "um": {},
-                    "hamburgu": {},
-                    "burg": {},
-                    "x": {},
-                    "coc": {},
-                    "refriger": {},
-                    "faz": {},
-                    "cardapi": {},
-                    "menu": {},
-                    "o": {},
-                    "que": {},
-                    "tem": {},
-                    "quant": {},
-                    "cust": {},
-                    "qual": {},
-                    "valor": {},
-                    "fal": {},
-                    "com": {},
-                    "atendent": {},
-                    "algu": {},
-                    "nonefeature": {}
-                  },
-                  {
-                    "pedido.pizza": {
-                      "bias": 0.130407262,
-                      "weights": {
-                        "quer": -0.052691031,
-                        "ped": -0.038330119,
-                        "uma": 3.09051013,
-                        "pizz": 9.320976257,
-                        "margherit": 3.068215609,
-                        "gost": -0.224903718,
-                        "de": -0.224903718,
-                        "um": -0.925122797,
-                        "hamburgu": -0.224903718,
-                        "burg": -0.900279343,
-                        "x": -0.200060233,
-                        "coc": -3.162248373,
-                        "refriger": -0.377314776,
-                        "faz": -0.596785128,
-                        "cardapi": -0.296866417,
-                        "menu": -0.289386213,
-                        "o": -0.235954493,
-                        "que": -0.126198292,
-                        "tem": -0.126198292,
-                        "quant": -0.185994789,
-                        "cust": -0.185994789,
-                        "qual": -0.109756216,
-                        "valor": -0.109756216,
-                        "fal": -0.355867475,
-                        "com": -0.355867475,
-                        "atendent": -0.078468256,
-                        "algu": -0.277399242,
-                        "nonefeature": -0.267234087
-                      }
-                    },
-                    "pedido.hamburguer": {
-                      "bias": 0.871443679,
-                      "weights": {
-                        "quer": 0.012659494,
-                        "ped": -1.285907626,
-                        "uma": -1.014468551,
-                        "pizz": -0.611610949,
-                        "margherit": -0.30120635,
-                        "gost": 2.321367264,
-                        "de": 2.321367264,
-                        "um": 4.658288002,
-                        "hamburgu": 2.321367264,
-                        "burg": 6.972392082,
-                        "x": 4.635472298,
-                        "coc": -0.704063833,
-                        "refriger": -0.877741754,
-                        "faz": -0.295024812,
-                        "cardapi": -0.870772898,
-                        "menu": -0.868010104,
-                        "o": -0.530055702,
-                        "que": -0.279911071,
-                        "tem": -0.279911071,
-                        "quant": -0.465133101,
-                        "cust": -0.465133101,
-                        "qual": -0.25014469,
-                        "valor": -0.25014469,
-                        "fal": -0.552558661,
-                        "com": -0.552558661,
-                        "atendent": -0.156183481,
-                        "algu": -0.396375149,
-                        "nonefeature": -0.86185956
-                      }
-                    },
-                    "pedido.bebida": {
-                      "bias": 1.669157408,
-                      "weights": {
-                        "quer": 0.465563208,
-                        "ped": -2.214759111,
-                        "uma": 2.772118092,
-                        "pizz": -4.807805061,
-                        "margherit": -0.04940372,
-                        "gost": -0.237033799,
-                        "de": -0.237033799,
-                        "um": -0.94805783,
-                        "hamburgu": -0.237033799,
-                        "burg": -1.180157185,
-                        "x": -0.469133049,
-                        "coc": 7.530519485,
-                        "refriger": 10.617627144,
-                        "faz": -0.275819898,
-                        "cardapi": -1.633931518,
-                        "menu": -1.623934865,
-                        "o": -0.836367726,
-                        "que": -0.418492973,
-                        "tem": -0.418492973,
-                        "quant": -0.834770322,
-                        "cust": -0.834770322,
-                        "qual": -0.417874694,
-                        "valor": -0.417874694,
-                        "fal": -0.804322302,
-                        "com": -0.804322302,
-                        "atendent": -0.177577838,
-                        "algu": -0.626744449,
-                        "nonefeature": -1.602693915
-                      }
-                    },
-                    "pedido.generic": {
-                      "bias": 0.755284863,
-                      "weights": {
-                        "quer": 2.541096926,
-                        "ped": 8.64008522,
-                        "uma": -5.875468731,
-                        "pizz": -5.82089138,
-                        "gost": -0.083205715,
-                        "de": -0.083205715,
-                        "um": -1.569723368,
-                        "hamburgu": -0.083205715,
-                        "burg": -1.567439079,
-                        "x": -0.080921426,
-                        "coc": -0.054577239,
-                        "refriger": -0.73346585,
-                        "faz": 3.42398572,
-                        "cardapi": -0.84073931,
-                        "menu": -0.83058542,
-                        "o": -0.513746023,
-                        "que": -0.269062042,
-                        "tem": -0.269062042,
-                        "quant": -0.466813147,
-                        "cust": -0.466813147,
-                        "qual": -0.244684041,
-                        "valor": -0.244684041,
-                        "fal": -1.108520985,
-                        "com": -1.108520985,
-                        "atendent": -0.104923829,
-                        "algu": -1.00359714,
-                        "nonefeature": -0.80514425
-                      }
-                    },
-                    "cardapio": {
-                      "bias": 2.997251147,
-                      "weights": {
-                        "quer": -1.502660751,
-                        "ped": -1.655994415,
-                        "uma": -0.934097409,
-                        "pizz": -1.68314755,
-                        "margherit": -1.302496433,
-                        "gost": -0.703439713,
-                        "de": -0.703439713,
-                        "um": -0.883470237,
-                        "hamburgu": -0.703439713,
-                        "burg": -1.581473112,
-                        "x": -1.401442409,
-                        "coc": -0.553446293,
-                        "refriger": -2.845570564,
-                        "faz": -1.309182167,
-                        "cardapi": 9.352395058,
-                        "menu": 9.340676308,
-                        "o": 1.623068333,
-                        "que": 3.935732841,
-                        "tem": 3.935732841,
-                        "quant": -1.50062263,
-                        "cust": -1.50062263,
-                        "qual": -2.312664747,
-                        "valor": -2.312664747,
-                        "fal": -1.072648764,
-                        "com": -1.072648764,
-                        "atendent": -0.857769787,
-                        "algu": -0.214879289,
-                        "nonefeature": -2.892425537
-                      }
-                    },
-                    "preco": {
-                      "bias": 0.964762533,
-                      "weights": {
-                        "quer": -0.675984859,
-                        "ped": -0.615589142,
-                        "uma": -0.371772766,
-                        "pizz": -0.67388773,
-                        "margherit": -0.431686312,
-                        "gost": -0.276322305,
-                        "de": -0.276322305,
-                        "um": -0.381089002,
-                        "hamburgu": -0.276322305,
-                        "burg": -0.591857493,
-                        "x": -0.487090796,
-                        "coc": -0.129571229,
-                        "refriger": -0.962902844,
-                        "faz": -0.432858914,
-                        "cardapi": -0.95766449,
-                        "menu": -0.953169227,
-                        "o": 2.642379999,
-                        "que": -1.802505255,
-                        "tem": -1.802505255,
-                        "quant": 5.763868809,
-                        "cust": 5.763868809,
-                        "qual": 4.444884777,
-                        "valor": 4.444884777,
-                        "fal": -0.463507295,
-                        "com": -0.463507295,
-                        "atendent": -0.326722175,
-                        "algu": -0.136785135,
-                        "nonefeature": -0.972507775
-                      }
-                    },
-                    "humano": {
-                      "bias": 0.358612223,
-                      "weights": {
-                        "quer": 0.352286637,
-                        "ped": -0.840936303,
-                        "uma": -0.903387547,
-                        "pizz": -0.686679959,
-                        "margherit": -0.068991497,
-                        "gost": -0.108816259,
-                        "de": -0.108816259,
-                        "um": -0.574822247,
-                        "hamburgu": -0.108816259,
-                        "burg": -0.568695724,
-                        "x": -0.10268975,
-                        "coc": -0.285699219,
-                        "refriger": -0.360957384,
-                        "faz": -0.043656405,
-                        "cardapi": -0.357723355,
-                        "menu": -0.356478482,
-                        "o": -0.224723563,
-                        "que": -0.119191736,
-                        "tem": -0.119191736,
-                        "quant": -0.192244366,
-                        "cust": -0.192244366,
-                        "qual": -0.105531879,
-                        "valor": -0.105531879,
-                        "fal": 4.785806179,
-                        "com": 4.785806179,
-                        "atendent": 2.566151142,
-                        "algu": 2.219655275,
-                        "nonefeature": -0.384892225
-                      }
-                    },
-                    "None": {
-                      "bias": 1.338011012,
-                      "weights": {
-                        "quer": -0.653575361,
-                        "ped": -0.762565255,
-                        "uma": -0.443944573,
-                        "pizz": -0.770217299,
-                        "margherit": -0.566404164,
-                        "gost": -0.308787405,
-                        "de": -0.308787405,
-                        "um": -0.411881804,
-                        "hamburgu": -0.308787405,
-                        "burg": -0.719449639,
-                        "x": -0.61635536,
-                        "coc": -0.240131319,
-                        "refriger": -1.277782321,
-                        "faz": -0.56614697,
-                        "cardapi": -1.264225006,
-                        "menu": -1.253316164,
-                        "o": -0.660800874,
-                        "que": -0.331154436,
-                        "tem": -0.331154436,
-                        "quant": -0.656276286,
-                        "cust": -0.656276286,
-                        "qual": -0.329646617,
-                        "valor": -0.329646617,
-                        "fal": -0.441981912,
-                        "com": -0.441981912,
-                        "atendent": -0.434016615,
-                        "algu": -0.007965274,
-                        "nonefeature": 10.919570923
-                      }
-                    }
-                  }
-                ],
-                "trainOpts": {
-                  "iterations": 20000,
-                  "errorThresh": 0.00005,
-                  "fixedError": false,
-                  "deltaErrorThresh": 0.000001,
-                  "learningRate": 0.7,
-                  "momentum": 0.5,
-                  "leakyReluAlpha": 0.08,
-                  "maxDecimals": 9,
-                  "log": false
-                }
+              "pedido.hamburguer": {
+                "gost": 1,
+                "de": 1,
+                "um": 1,
+                "hamburgu": 1,
+                "quer": 1,
+                "burg": 1,
+                "x": 1
+              },
+              "pedido.bebida": {
+                "quer": 1,
+                "uma": 1,
+                "coc": 1,
+                "refriger": 1
+              },
+              "pedido.generic": {
+                "faz": 1,
+                "ped": 1,
+                "quer": 1
+              },
+              "cardapio": {
+                "cardapi": 1,
+                "menu": 1,
+                "o": 1,
+                "que": 1,
+                "tem": 1
+              },
+              "preco": {
+                "quant": 1,
+                "cust": 1,
+                "qual": 1,
+                "o": 1,
+                "valor": 1
+              },
+              "humano": {
+                "fal": 1,
+                "com": 1,
+                "atendent": 1,
+                "quer": 1,
+                "algu": 1
               }
+            },
+            "featuresToIntent": {
+              "quer": [
+                "pedido.pizza",
+                "pedido.hamburguer",
+                "pedido.bebida",
+                "pedido.generic",
+                "humano"
+              ],
+              "ped": [
+                "pedido.pizza",
+                "pedido.generic"
+              ],
+              "uma": [
+                "pedido.pizza",
+                "pedido.bebida"
+              ],
+              "pizz": [
+                "pedido.pizza"
+              ],
+              "margherit": [
+                "pedido.pizza"
+              ],
+              "gost": [
+                "pedido.hamburguer"
+              ],
+              "de": [
+                "pedido.hamburguer"
+              ],
+              "um": [
+                "pedido.hamburguer"
+              ],
+              "hamburgu": [
+                "pedido.hamburguer"
+              ],
+              "burg": [
+                "pedido.hamburguer"
+              ],
+              "x": [
+                "pedido.hamburguer"
+              ],
+              "coc": [
+                "pedido.bebida"
+              ],
+              "refriger": [
+                "pedido.bebida"
+              ],
+              "faz": [
+                "pedido.generic"
+              ],
+              "cardapi": [
+                "cardapio"
+              ],
+              "menu": [
+                "cardapio"
+              ],
+              "o": [
+                "cardapio",
+                "preco"
+              ],
+              "que": [
+                "cardapio"
+              ],
+              "tem": [
+                "cardapio"
+              ],
+              "quant": [
+                "preco"
+              ],
+              "cust": [
+                "preco"
+              ],
+              "qual": [
+                "preco"
+              ],
+              "valor": [
+                "preco"
+              ],
+              "fal": [
+                "humano"
+              ],
+              "com": [
+                "humano"
+              ],
+              "atendent": [
+                "humano"
+              ],
+              "algu": [
+                "humano"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "pt",
+                "tag": "nlu-pt",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "quer",
+                "ped",
+                "uma",
+                "pizz",
+                "margherit",
+                "gost",
+                "de",
+                "um",
+                "hamburgu",
+                "burg",
+                "x",
+                "coc",
+                "refriger",
+                "faz",
+                "cardapi",
+                "menu",
+                "o",
+                "que",
+                "tem",
+                "quant",
+                "cust",
+                "qual",
+                "valor",
+                "fal",
+                "com",
+                "atendent",
+                "algu"
+              ],
+              "intents": [
+                "pedido.pizza",
+                "pedido.hamburguer",
+                "pedido.bebida",
+                "pedido.generic",
+                "cardapio",
+                "preco",
+                "humano"
+              ],
+              "perceptrons": [
+                [
+                  -0.0827999860048294,
+                  -0.020189281553030014,
+                  3.5372707843780518,
+                  10.643606185913086,
+                  3.5196313858032227,
+                  -0.20203758776187897,
+                  -0.20203758776187897,
+                  -0.8969146609306335,
+                  -0.20203758776187897,
+                  -0.905829131603241,
+                  -0.20930655300617218,
+                  -3.587083578109741,
+                  -0.4522520899772644,
+                  -0.6566233038902283,
+                  -0.3855970799922943,
+                  -0.3793580234050751,
+                  -0.32019326090812683,
+                  -0.14839985966682434,
+                  -0.14839985966682434,
+                  -0.2457592934370041,
+                  -0.2457592934370041,
+                  -0.14106909930706024,
+                  -0.14106909930706024,
+                  -0.5132867097854614,
+                  -0.5132867097854614,
+                  -0.08872281014919281,
+                  -0.3940957486629486,
+                  0.15617789736904616
+                ],
+                [
+                  -0.02259693667292595,
+                  -1.5025960206985474,
+                  -1.2359507083892822,
+                  -0.8486160039901733,
+                  -0.3461758494377136,
+                  2.6252758502960205,
+                  2.6252758502960205,
+                  5.2930827140808105,
+                  2.6252758502960205,
+                  7.913200378417969,
+                  5.245415687561035,
+                  -0.7183170914649963,
+                  -1.1129976511001587,
+                  -0.3295184075832367,
+                  -1.1092842817306519,
+                  -1.1067829132080078,
+                  -0.7095854878425598,
+                  -0.3498647212982178,
+                  -0.3498647212982178,
+                  -0.5940377712249756,
+                  -0.5940377712249756,
+                  -0.3218914866447449,
+                  -0.3218914866447449,
+                  -0.7000289559364319,
+                  -0.7000289559364319,
+                  -0.19395409524440765,
+                  -0.4575387239456177,
+                  1.1126863502048214
+                ],
+                [
+                  0.41019612550735474,
+                  -2.5925731658935547,
+                  3.0790624618530273,
+                  -5.547365188598633,
+                  -0.06329858303070068,
+                  -0.3316684663295746,
+                  -0.3316684663295746,
+                  -1.1618844270706177,
+                  -0.3316684663295746,
+                  -1.4892349243164062,
+                  -0.6590197086334229,
+                  8.545960426330566,
+                  11.948589324951172,
+                  -0.2930873930454254,
+                  -2.110565662384033,
+                  -2.1006338596343994,
+                  -1.0818660259246826,
+                  -0.5411314964294434,
+                  -0.5411314964294434,
+                  -1.0799150466918945,
+                  -1.0799150466918945,
+                  -0.5405588150024414,
+                  -0.5405588150024414,
+                  -0.9609667062759399,
+                  -0.9609667062759399,
+                  -0.24402393400669098,
+                  -0.7078519463539124,
+                  2.164585048573955
+                ],
+                [
+                  2.7778680324554443,
+                  9.790453910827637,
+                  -6.71968412399292,
+                  -6.524073123931885,
+                  -0.01417374238371849,
+                  -0.12693680822849274,
+                  -0.12693680822849274,
+                  -1.7806795835494995,
+                  -0.12693680822849274,
+                  -1.7828762531280518,
+                  -0.14132723212242126,
+                  -0.18164990842342377,
+                  -0.9530655145645142,
+                  3.8832242488861084,
+                  -1.0388628244400024,
+                  -1.031358242034912,
+                  -0.6147341728210449,
+                  -0.31305429339408875,
+                  -0.31305429339408875,
+                  -0.5726845264434814,
+                  -0.5726845264434814,
+                  -0.28980207443237305,
+                  -0.28980207443237305,
+                  -1.2810800075531006,
+                  -1.2810800075531006,
+                  -0.14479030668735504,
+                  -1.104833960533142,
+                  0.9660776761999581
+                ],
+                [
+                  -1.923393726348877,
+                  -2.1351146697998047,
+                  -1.185019612312317,
+                  -2.144732713699341,
+                  -1.6816956996917725,
+                  -0.8981700539588928,
+                  -0.8981700539588928,
+                  -1.1381996870040894,
+                  -0.8981700539588928,
+                  -2.0324816703796387,
+                  -1.7924525737762451,
+                  -0.7219827175140381,
+                  -3.6762290000915527,
+                  -1.676007628440857,
+                  10.348323822021484,
+                  10.341044425964355,
+                  1.654165506362915,
+                  4.398210048675537,
+                  4.398210048675537,
+                  -1.9148739576339722,
+                  -1.9148739576339722,
+                  -2.7438619136810303,
+                  -2.7438619136810303,
+                  -1.3606609106063843,
+                  -1.3606609106063843,
+                  -1.1118136644363403,
+                  -0.20948950946331024,
+                  3.8352001880793924
+                ],
+                [
+                  -0.8905158638954163,
+                  -0.8043357729911804,
+                  -0.47043782472610474,
+                  -0.8625778555870056,
+                  -0.5664610862731934,
+                  -0.3601909577846527,
+                  -0.3601909577846527,
+                  -0.5173385739326477,
+                  -0.3601909577846527,
+                  -0.7710853219032288,
+                  -0.6235409379005432,
+                  -0.17426660656929016,
+                  -1.208253026008606,
+                  -0.5534701347351074,
+                  -1.2041542530059814,
+                  -1.2007193565368652,
+                  2.967214822769165,
+                  -2.087775230407715,
+                  -2.087775230407715,
+                  6.537736892700195,
+                  6.537736892700195,
+                  5.05511999130249,
+                  5.05511999130249,
+                  -0.5788458585739136,
+                  -0.5788458585739136,
+                  -0.4128052890300751,
+                  -0.13935859501361847,
+                  1.207380869781891
+                ],
+                [
+                  0.3980589210987091,
+                  -0.961763858795166,
+                  -1.0239496231079102,
+                  -0.7559558749198914,
+                  -0.10421045124530792,
+                  -0.14401264488697052,
+                  -0.14401264488697052,
+                  -0.6608774065971375,
+                  -0.14401264488697052,
+                  -0.6619072556495667,
+                  -0.14229021966457367,
+                  -0.36445412039756775,
+                  -0.43862369656562805,
+                  -0.0858490988612175,
+                  -0.4347357749938965,
+                  -0.4338691532611847,
+                  -0.3157244026660919,
+                  -0.15744566917419434,
+                  -0.15744566917419434,
+                  -0.24717269837856293,
+                  -0.24717269837856293,
+                  -0.13715629279613495,
+                  -0.13715629279613495,
+                  5.46059513092041,
+                  5.46059513092041,
+                  2.9283950328826904,
+                  2.5321388244628906,
+                  0.4349528150572454
+                ]
+              ]
             }
           }
         }
       }
     },
+    "intentDomains": {},
     "extraSentences": [
       [
         "pt",
@@ -704,69 +730,63 @@
       ]
     ]
   },
-  "nerManager": {
-    "settings": {},
-    "threshold": 0.8,
-    "builtins": [
-      "Number",
-      "Ordinal",
-      "Percentage",
-      "Age",
-      "Currency",
-      "Dimension",
-      "Temperature",
-      "DateTime",
-      "PhoneNumber",
-      "IpAddress",
-      "Boolean",
-      "Email",
-      "Hashtag",
-      "URL"
-    ],
-    "namedEntities": {}
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
   },
-  "slotManager": {},
-  "responses": {
-    "pt": {
-      "pedido.pizza": [
-        {
-          "response": "Ótima escolha! Pizza anotada."
-        }
-      ],
-      "pedido.hamburguer": [
-        {
-          "response": "Hambúrguer anotado!"
-        }
-      ],
-      "pedido.bebida": [
-        {
-          "response": "Bebida anotada!"
-        }
-      ],
-      "pedido.generic": [
-        {
-          "response": "Pedido recebido!"
-        }
-      ],
-      "cardapio": [
-        {
-          "response": "Vou te mostrar nosso cardápio!"
-        }
-      ],
-      "preco": [
-        {
-          "response": "Vou verificar os preços para você!"
-        }
-      ],
-      "humano": [
-        {
-          "response": "Transferindo para atendente humano..."
-        }
-      ]
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {
+      "pt": {
+        "pedido.pizza": [
+          {
+            "answer": "Ótima escolha! Pizza anotada."
+          }
+        ],
+        "pedido.hamburguer": [
+          {
+            "answer": "Hambúrguer anotado!"
+          }
+        ],
+        "pedido.bebida": [
+          {
+            "answer": "Bebida anotada!"
+          }
+        ],
+        "pedido.generic": [
+          {
+            "answer": "Pedido recebido!"
+          }
+        ],
+        "cardapio": [
+          {
+            "answer": "Vou te mostrar nosso cardápio!"
+          }
+        ],
+        "preco": [
+          {
+            "answer": "Vou verificar os preços para você!"
+          }
+        ],
+        "humano": [
+          {
+            "answer": "Transferindo para atendente humano..."
+          }
+        ]
+      }
     }
   },
-  "actions": {},
-  "utteranceDict": {
-    "?": "help"
-  }
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
 }
