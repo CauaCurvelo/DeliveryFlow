@@ -7,7 +7,6 @@
 git clone https://github.com/CauaCurvelo/DeliveryFlow.git
 ```
 
-
 2. **Instale as dependências em cada pasta:**
 ```bash
 cd api
