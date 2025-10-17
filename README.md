@@ -7,16 +7,27 @@
 git clone https://github.com/CauaCurvelo/DeliveryFlow.git
 ```
 
-2. **Instale as dependências:**
+
+2. **Instale as dependências em cada pasta:**
 ```bash
-npm install
 cd api
 npm install
-cd ..
+
+cd ../painel-admin
+npm install
+
+cd ../painel-cliente
+npm install
 ```
 
 3. **Configuração do banco de dados:**
-- Certifique-se de ter o MongoDB rodando localmente ou configure a string de conexão no arquivo `.env` da pasta `api`.
+- O backend precisa de um banco MongoDB para funcionar.
+- Você pode:
+	- Rodar o MongoDB localmente (recomendado para desenvolvimento), **OU**
+	- Usar um serviço de MongoDB na nuvem (ex: Atlas, Render, etc).
+- No arquivo `.env` da pasta `api`, configure a variável `MONGODB_URI` com a string de conexão do seu banco.
+	- Exemplo para local: `MONGODB_URI=mongodb://localhost:27017/deliveryflow`
+	- Exemplo para Atlas: `MONGODB_URI=mongodb+srv://usuario:senha@cluster.mongodb.net/deliveryflow`
 
 4. **Rodando o backend:**
 ```bash
@@ -27,11 +38,9 @@ npm start
 5. **Rodando painel admin/cliente:**
 ```bash
 cd painel-admin
-npm install
 npm run dev
 
 cd painel-cliente
-npm install
 npm run dev
 ```
 
