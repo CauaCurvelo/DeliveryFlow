@@ -42,7 +42,7 @@ function App() {
   useEffect(() => {
     document.documentElement.classList.add('dark');
     // Carregar configuração de mesas
-    fetch('/api/config/tables')
+    fetch('http://localhost:4000/api/config/tables')
       .then(res => res.json())
       .then(data => {
         if (data.totalTables) {
@@ -60,7 +60,7 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/api/produtos');
+      const response = await fetch('http://localhost:4000/api/produtos');
       const data = await response.json();
       setProducts(data.filter((p: Product) => p.ativo));
     } catch (error) {
@@ -126,7 +126,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('/api/pedidos', {
+      const response = await fetch('http://localhost:4000/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
@@ -152,19 +152,22 @@ function App() {
 
   if (step === 'welcome') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
-              <ShoppingCart className="w-10 h-10 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-orange-500 via-red-500 to-red-600 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-0">
+          <CardHeader className="text-center pb-8">
+            <div className="mx-auto mb-6 w-24 h-24 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center shadow-xl animate-pulse">
+              <ShoppingCart className="w-12 h-12 text-white" />
             </div>
-            <CardTitle className="text-3xl">DeliveryFlow</CardTitle>
-            <CardDescription>Faça seu pedido de forma rápida e fácil</CardDescription>
+            <CardTitle className="text-4xl font-bold mb-2 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">DeliveryFlow</CardTitle>
+            <CardDescription className="text-lg">Faça seu pedido de forma rápida e fácil</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button onClick={() => setStep('location-choice')} className="w-full h-14 text-lg" size="lg">
-              Fazer Pedido
+          <CardContent className="space-y-4 pb-8">
+            <Button onClick={() => setStep('location-choice')} className="w-full h-16 text-xl font-semibold bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 shadow-lg" size="lg">
+              🍽️ Começar Pedido
             </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              Atendimento rápido e seguro
+            </p>
           </CardContent>
         </Card>
         <Toaster />
@@ -174,58 +177,64 @@ function App() {
 
   if (step === 'location-choice') {
     return (
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
         <div className="max-w-2xl mx-auto pt-8">
-          <h1 className="text-3xl font-bold mb-2">Como deseja receber?</h1>
-          <p className="text-muted-foreground mb-8">Escolha a melhor opção para você</p>
+          <button
+            onClick={() => setStep('welcome')}
+            className="mb-6 text-gray-400 hover:text-white transition-colors"
+          >
+            ← Voltar
+          </button>
+          <h1 className="text-4xl font-bold mb-3 text-white">Como deseja receber?</h1>
+          <p className="text-gray-400 mb-8 text-lg">Escolha a melhor opção para você</p>
 
           <div className="grid gap-4">
-            <Card className="cursor-pointer hover:border-orange-500 transition-colors" onClick={() => {
+            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-2 hover:border-orange-500 bg-slate-800/50 backdrop-blur" onClick={() => {
               setOrderType('local');
               setStep('table-selection');
             }}>
               <CardHeader>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
-                    <Store className="w-6 h-6 text-white" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
+                    <Store className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <CardTitle>Estou no Estabelecimento</CardTitle>
-                    <CardDescription>Selecione sua mesa e faça o pedido</CardDescription>
+                    <CardTitle className="text-xl text-white">Estou no Estabelecimento</CardTitle>
+                    <CardDescription className="text-gray-400">Selecione sua mesa e faça o pedido</CardDescription>
                   </div>
                 </div>
               </CardHeader>
             </Card>
 
-            <Card className="cursor-pointer hover:border-orange-500 transition-colors" onClick={() => {
+            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-2 hover:border-blue-500 bg-slate-800/50 backdrop-blur" onClick={() => {
               setOrderType('delivery');
               setStep('customer-info');
             }}>
               <CardHeader>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                    <MapPin className="w-6 h-6 text-white" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center shadow-lg">
+                    <MapPin className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <CardTitle>Delivery</CardTitle>
-                    <CardDescription>Receba em casa com comodidade</CardDescription>
+                    <CardTitle className="text-xl text-white">Delivery</CardTitle>
+                    <CardDescription className="text-gray-400">Receba em casa com comodidade</CardDescription>
                   </div>
                 </div>
               </CardHeader>
             </Card>
 
-            <Card className="cursor-pointer hover:border-orange-500 transition-colors" onClick={() => {
+            <Card className="cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all border-2 hover:border-green-500 bg-slate-800/50 backdrop-blur" onClick={() => {
               setOrderType('pickup');
               setStep('customer-info');
             }}>
               <CardHeader>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                    <Home className="w-6 h-6 text-white" />
+                  <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center shadow-lg">
+                    <Home className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <CardTitle>Retirada</CardTitle>
-                    <CardDescription>Busque no local e economize</CardDescription>
+                    <CardTitle className="text-xl text-white">Retirada</CardTitle>
+                    <CardDescription className="text-gray-400">Busque no local e economize</CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -241,18 +250,28 @@ function App() {
     const tables = Array.from({ length: totalTables }, (_, i) => i + 1);
 
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="max-w-2xl mx-auto pt-8">
-          <h1 className="text-3xl font-bold mb-2">Selecione sua Mesa</h1>
-          <p className="text-muted-foreground mb-8">Escolha o número da mesa onde você está</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+        <div className="max-w-3xl mx-auto pt-8">
+          <button
+            onClick={() => setStep('location-choice')}
+            className="mb-6 text-gray-400 hover:text-white transition-colors"
+          >
+            ← Voltar
+          </button>
+          <h1 className="text-4xl font-bold mb-3 text-white">🪑 Selecione sua Mesa</h1>
+          <p className="text-gray-400 mb-8 text-lg">Escolha o número da mesa onde você está</p>
 
-          <div className="grid grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-4 md:grid-cols-5 gap-3 mb-8">
             {tables.map(num => (
               <Button
                 key={num}
                 variant={tableNumber === num.toString() ? 'default' : 'outline'}
                 onClick={() => setTableNumber(num.toString())}
-                className="h-16 text-lg"
+                className={`h-20 text-2xl font-bold transition-all ${
+                  tableNumber === num.toString()
+                    ? 'bg-gradient-to-br from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 scale-110 shadow-xl'
+                    : 'bg-slate-800/50 border-gray-700 hover:bg-slate-700 hover:border-orange-500 text-white'
+                }`}
               >
                 {num}
               </Button>
@@ -260,11 +279,12 @@ function App() {
           </div>
 
           <div className="flex gap-4">
-            <Button variant="outline" onClick={() => setStep('location-choice')} className="flex-1">
-              Voltar
-            </Button>
-            <Button onClick={() => setStep('customer-info')} disabled={!tableNumber} className="flex-1">
-              Continuar
+            <Button
+              onClick={() => setStep('customer-info')}
+              disabled={!tableNumber}
+              className="flex-1 h-14 text-lg bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 disabled:opacity-50"
+            >
+              Continuar →
             </Button>
           </div>
         </div>
@@ -275,40 +295,52 @@ function App() {
 
   if (step === 'customer-info') {
     return (
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
         <div className="max-w-2xl mx-auto pt-8">
-          <h1 className="text-3xl font-bold mb-2">Seus Dados</h1>
-          <p className="text-muted-foreground mb-8">Precisamos de algumas informações para finalizar</p>
+          <button
+            onClick={() => setStep(orderType === 'local' ? 'table-selection' : 'location-choice')}
+            className="mb-6 text-gray-400 hover:text-white transition-colors"
+          >
+            ← Voltar
+          </button>
+          <h1 className="text-4xl font-bold mb-3 text-white">Seus Dados</h1>
+          <p className="text-gray-400 mb-8 text-lg">Precisamos de algumas informações</p>
 
-          <Card>
-            <CardContent className="pt-6 space-y-4">
+          <Card className="bg-slate-800/50 backdrop-blur border-gray-700">
+            <CardContent className="pt-6 space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="name">Nome Completo *</Label>
-                <Input
-                  id="name"
-                  placeholder="Digite seu nome"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                />
+                <Label htmlFor="name" className="text-gray-300 text-base">Nome Completo *</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 w-5 h-5 text-gray-500" />
+                  <Input
+                    id="name"
+                    placeholder="Digite seu nome"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="pl-11 h-12 bg-slate-700/50 border-gray-600 text-white placeholder:text-gray-500"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">WhatsApp *</Label>
+                <Label htmlFor="phone" className="text-gray-300 text-base">WhatsApp *</Label>
                 <Input
                   id="phone"
                   type="tel"
                   placeholder="(00) 00000-0000"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="h-12 bg-slate-700/50 border-gray-600 text-white placeholder:text-gray-500"
                 />
               </div>
 
               {orderType === 'delivery' && (
                 <div className="space-y-2">
-                  <Label htmlFor="address">Endereço Completo *</Label>
+                  <Label htmlFor="address" className="text-gray-300 text-base">Endereço Completo *</Label>
                   <Textarea
                     id="address"
                     placeholder="Rua, número, complemento, bairro"
+                    className="bg-slate-700/50 border-gray-600 text-white placeholder:text-gray-500 min-h-[100px]"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                   />
@@ -316,24 +348,21 @@ function App() {
               )}
 
               {orderType === 'local' && (
-                <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm font-medium">Mesa Selecionada</p>
-                  <p className="text-2xl font-bold text-orange-500">Mesa {tableNumber}</p>
+                <div className="bg-gradient-to-r from-orange-500/20 to-red-500/20 p-5 rounded-lg border border-orange-500/30">
+                  <p className="text-sm font-medium text-gray-400">Mesa Selecionada</p>
+                  <p className="text-3xl font-bold text-orange-400 mt-1">Mesa {tableNumber}</p>
                 </div>
               )}
             </CardContent>
           </Card>
 
           <div className="flex gap-4 mt-8">
-            <Button variant="outline" onClick={() => setStep(orderType === 'local' ? 'table-selection' : 'location-choice')} className="flex-1">
-              Voltar
-            </Button>
             <Button
               onClick={() => setStep('menu')}
               disabled={!customerName || !customerPhone || (orderType === 'delivery' && !address)}
-              className="flex-1"
+              className="flex-1 h-14 text-lg bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 disabled:opacity-50"
             >
-              Ver Cardápio
+              Ver Cardápio →
             </Button>
           </div>
         </div>
@@ -344,20 +373,20 @@ function App() {
 
   if (step === 'menu') {
     return (
-      <div className="min-h-screen bg-background pb-32">
-        <div className="sticky top-0 bg-background border-b z-10 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pb-32">
+        <div className="sticky top-0 bg-slate-900/95 backdrop-blur border-b border-gray-700 z-10 p-4 shadow-lg">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold">Cardápio</h1>
-              <p className="text-muted-foreground text-sm">
-                {orderType === 'local' ? `Mesa ${tableNumber}` : orderType === 'delivery' ? 'Delivery' : 'Retirada'}
+              <h1 className="text-2xl font-bold text-white">🍽️ Cardápio</h1>
+              <p className="text-gray-400 text-sm">
+                {orderType === 'local' ? `Mesa ${tableNumber}` : orderType === 'delivery' ? '🚚 Delivery' : '🏃 Retirada'}
               </p>
             </div>
             <div className="relative">
-              <Button onClick={() => setStep('checkout')} size="icon" className="relative">
+              <Button onClick={() => setStep('checkout')} size="icon" className="relative bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700">
                 <ShoppingCart className="w-5 h-5" />
                 {cart.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center p-0 bg-red-500">
+                  <Badge className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center p-0 bg-green-500 text-white animate-pulse">
                     {cart.reduce((sum, item) => sum + item.quantity, 0)}
                   </Badge>
                 )}
@@ -367,48 +396,56 @@ function App() {
         </div>
 
         <div className="max-w-4xl mx-auto p-4">
-          {Object.entries(groupedProducts).map(([category, items]) => (
-            <div key={category} className="mb-8">
-              <h2 className="text-2xl font-bold mb-4">{category}</h2>
-              <div className="grid gap-4">
-                {items.map((product) => (
-                  <Card key={product._id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="flex gap-4 p-4">
-                      <img
-                        src={product.imagem}
-                        alt={product.nome}
-                        className="w-24 h-24 object-cover rounded-lg"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Sem+Imagem';
-                        }}
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{product.nome}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{product.descricao}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-lg font-bold text-green-500">{formatCurrency(product.preco)}</p>
-                          <Button onClick={() => addToCart(product)} size="sm">
-                            Adicionar
-                          </Button>
+          {products.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400 text-lg">Carregando cardápio...</p>
+            </div>
+          ) : (
+            Object.entries(groupedProducts).map(([category, items]) => (
+              <div key={category} className="mb-8">
+                <h2 className="text-3xl font-bold mb-5 text-white flex items-center gap-2">
+                  <span className="text-orange-500">●</span> {category}
+                </h2>
+                <div className="grid gap-4">
+                  {items.map((product) => (
+                    <Card key={product._id} className="overflow-hidden hover:shadow-2xl transition-all hover:scale-[1.02] bg-slate-800/50 backdrop-blur border-gray-700">
+                      <div className="flex gap-4 p-4">
+                        <img
+                          src={product.imagem}
+                          alt={product.nome}
+                          className="w-28 h-28 object-cover rounded-lg shadow-md"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=🍽️';
+                          }}
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-bold text-xl text-white mb-1">{product.nome}</h3>
+                          <p className="text-sm text-gray-400 line-clamp-2 mb-3">{product.descricao}</p>
+                          <div className="flex items-center justify-between mt-auto">
+                            <p className="text-2xl font-bold text-green-400">{formatCurrency(product.preco)}</p>
+                            <Button onClick={() => addToCart(product)} size="sm" className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700">
+                              + Adicionar
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         {cart.length > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 bg-card border-t p-4">
+          <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-t border-gray-700 p-4 shadow-2xl">
             <div className="max-w-4xl mx-auto flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{formatCurrency(getTotalPrice())}</p>
+                <p className="text-sm text-gray-400">Total do Pedido</p>
+                <p className="text-3xl font-bold text-green-400">{formatCurrency(getTotalPrice())}</p>
               </div>
-              <Button onClick={() => setStep('checkout')} size="lg">
-                Ver Carrinho ({cart.reduce((sum, item) => sum + item.quantity, 0)})
+              <Button onClick={() => setStep('checkout')} size="lg" className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 h-14 px-8 text-lg">
+                🛒 Ver Carrinho ({cart.reduce((sum, item) => sum + item.quantity, 0)})
               </Button>
             </div>
           </div>
@@ -420,10 +457,16 @@ function App() {
 
   if (step === 'checkout') {
     return (
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
         <div className="max-w-2xl mx-auto pt-8">
-          <h1 className="text-3xl font-bold mb-2">Seu Pedido</h1>
-          <p className="text-muted-foreground mb-8">Revise antes de finalizar</p>
+          <button
+            onClick={() => setStep('menu')}
+            className="mb-6 text-gray-400 hover:text-white transition-colors"
+          >
+            ← Voltar ao cardápio
+          </button>
+          <h1 className="text-4xl font-bold mb-3 text-white">🛒 Seu Pedido</h1>
+          <p className="text-gray-400 mb-8 text-lg">Revise antes de finalizar</p>
 
           <div className="space-y-4 mb-8">
             {cart.map((item) => (
@@ -505,39 +548,49 @@ function App() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-20 h-20 bg-green-500 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-12 h-12 text-white" />
+      <div className="min-h-screen bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-2xl border-0">
+          <CardHeader className="text-center pb-8">
+            <div className="mx-auto mb-6 w-28 h-28 bg-white rounded-full flex items-center justify-center shadow-2xl animate-bounce">
+              <CheckCircle className="w-16 h-16 text-green-600" />
             </div>
-            <CardTitle className="text-3xl">Pedido Confirmado!</CardTitle>
-            <CardDescription>
-              Pedido #{orderId.slice(-6)}
+            <CardTitle className="text-4xl font-bold text-green-700 mb-2">🎉 Pedido Confirmado!</CardTitle>
+            <CardDescription className="text-lg font-semibold text-green-600">
+              Pedido #{orderId.slice(-6).toUpperCase()}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-muted p-4 rounded-lg space-y-2">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-muted-foreground" />
-                <span className="font-medium">{customerName}</span>
+          <CardContent className="space-y-6 pb-8">
+            <div className="bg-green-50 p-5 rounded-lg space-y-3 border-2 border-green-200">
+              <div className="flex items-center gap-3">
+                <User className="w-5 h-5 text-green-600" />
+                <span className="font-semibold text-gray-800">{customerName}</span>
               </div>
               {orderType === 'local' && (
-                <div className="flex items-center gap-2">
-                  <Store className="w-4 h-4 text-muted-foreground" />
-                  <span>Mesa {tableNumber}</span>
+                <div className="flex items-center gap-3">
+                  <Store className="w-5 h-5 text-green-600" />
+                  <span className="text-gray-800 font-medium">Mesa {tableNumber}</span>
                 </div>
               )}
               {orderType === 'delivery' && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">{address}</span>
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-5 h-5 text-green-600" />
+                  <span className="text-sm text-gray-700">{address}</span>
                 </div>
               )}
+              <div className="pt-3 border-t border-green-200">
+                <p className="text-2xl font-bold text-green-700">
+                  Total: {formatCurrency(getTotalPrice() + (orderType === 'delivery' ? 5 : 0))}
+                </p>
+              </div>
             </div>
 
-            <div className="text-center text-sm text-muted-foreground">
-              Você receberá atualizações sobre o status do seu pedido
+            <div className="text-center p-4 bg-green-100 rounded-lg">
+              <p className="text-sm font-medium text-green-800">
+                ✨ Seu pedido está sendo preparado!
+              </p>
+              <p className="text-xs text-green-700 mt-1">
+                Você receberá atualizações sobre o status
+              </p>
             </div>
 
             <Button onClick={() => {
@@ -548,8 +601,8 @@ function App() {
               setAddress('');
               setTableNumber('');
               setNotes('');
-            }} className="w-full">
-              Fazer Novo Pedido
+            }} className="w-full h-14 text-lg bg-green-600 hover:bg-green-700">
+              🍽️ Fazer Novo Pedido
             </Button>
           </CardContent>
         </Card>
