@@ -60,9 +60,18 @@ async function removePedido(id) {
   return pedidoRemovido;
 }
 
+async function getPedidoById(id) {
+  if (isMongoConnected()) {
+    return Pedido.findById(id);
+  }
+
+  return pedidosMemoria.find((pedido) => pedido._id === id) || null;
+}
+
 module.exports = {
   listPedidos,
   createPedido,
   updatePedido,
-  removePedido
+  removePedido,
+  getPedidoById
 };

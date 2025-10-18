@@ -39,6 +39,8 @@ export default function Pedidos({ socket }: PedidosProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Pedido | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState<string>('');
 
   const fetchPedidos = async () => {
     try {
@@ -89,18 +91,40 @@ export default function Pedidos({ socket }: PedidosProps) {
     }
   };
 
-  const cancelOrder = async (id: string) => {
-    if (!confirm('Tem certeza que deseja cancelar este pedido?')) return;
+  const cancelOrder = async (id: string, reason: string) => {
+    if (!reason.trim()) {
+      toast.error('Por favor, forneça uma justificativa para o cancelamento');
+      return;
+    }
+
+    try {
+      const API_URL = 'http://localhost:4000';
+      await fetch(`${API_URL}/api/pedidos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'cancelled', cancelReason: reason }),
+      });
+      toast.success('Pedido cancelado com justificativa enviada!');
+      setCancellingId(null);
+      setCancelReason('');
+      fetchPedidos();
+    } catch (error) {
+      toast.error('Erro ao cancelar pedido');
+    }
+  };
+
+  const deletePedido = async (id: string) => {
+    if (!confirm('Tem certeza que deseja EXCLUIR permanentemente este pedido? Esta ação não pode ser desfeita!')) return;
     
     try {
       const API_URL = 'http://localhost:4000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'DELETE',
       });
-      toast.success('Pedido cancelado!');
+      toast.success('Pedido excluído permanentemente!');
       fetchPedidos();
     } catch (error) {
-      toast.error('Erro ao cancelar pedido');
+      toast.error('Erro ao excluir pedido');
     }
   };
 
@@ -407,11 +431,25 @@ export default function Pedidos({ socket }: PedidosProps) {
                               variant="destructive"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                cancelOrder(pedido._id);
+                                setCancellingId(pedido._id);
                               }}
                               className="h-8 text-xs"
                             >
                               Cancelar
+                            </Button>
+                          )}
+                          {pedido.status === 'delivered' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePedido(pedido._id);
+                              }}
+                              className="h-8 text-xs text-red-600 border-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                            >
+                              <X className="w-3 h-3 mr-1" />
+                              Excluir
                             </Button>
                           )}
                         </div>
@@ -450,6 +488,51 @@ export default function Pedidos({ socket }: PedidosProps) {
           })
         )}
       </div>
+
+      {/* Modal de Cancelamento */}
+      {cancellingId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md dark:bg-gray-800">
+            <CardHeader>
+              <CardTitle className="dark:text-white">Cancelar Pedido</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="cancelReason" className="dark:text-gray-300">
+                  Justificativa do Cancelamento
+                </Label>
+                <Textarea
+                  id="cancelReason"
+                  placeholder="Explique o motivo do cancelamento..."
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                  className="mt-2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  rows={4}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => cancelOrder(cancellingId, cancelReason)}
+                  className="flex-1"
+                  disabled={!cancelReason.trim()}
+                >
+                  Cancelar Pedido
+                </Button>
+                <Button
+                  onClick={() => {
+                    setCancellingId(null);
+                    setCancelReason('');
+                  }}
+                  variant="outline"
+                  className="flex-1 dark:border-gray-600"
+                >
+                  Voltar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

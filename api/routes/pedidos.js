@@ -63,6 +63,26 @@ function createPedidosRouter({ pedidoService, clienteService, io, whatsappServic
   router.put('/:id', async (req, res) => {
     try {
       const { id } = req.params;
+      const { status, cancelReason } = req.body;
+      
+      // Se está cancelando, enviar mensagem com justificativa
+      if (status === 'cancelled' && cancelReason) {
+        const pedido = await pedidoService.getPedidoById(id);
+        
+        if (pedido) {
+          const client = whatsappService.getClient();
+          if (pedido.telefone && client) {
+            try {
+              const mensagem = `❌ Seu pedido foi cancelado pelo restaurante.\n\n📋 Motivo: ${cancelReason}\n\nEm breve um atendente irá informar mais detalhes. Se precisar de algo, responda esta mensagem.`;
+              await client.sendMessage(pedido.telefone, mensagem);
+              console.log(`📱 Mensagem de cancelamento enviada para ${pedido.telefone}`);
+            } catch (sendError) {
+              console.error('⚠️ Erro ao enviar mensagem de cancelamento:', sendError);
+            }
+          }
+        }
+      }
+      
       const updates = { ...req.body, atualizadoEm: new Date() };
       const pedido = await pedidoService.updatePedido(id, updates);
 
@@ -90,22 +110,10 @@ function createPedidosRouter({ pedidoService, clienteService, io, whatsappServic
 
       io.emit('pedido-cancelado', { id });
 
-      const client = whatsappService.getClient();
-      if (pedido.telefone && client) {
-        try {
-          await client.sendMessage(
-            pedido.telefone,
-            '❌ Seu pedido foi cancelado pelo restaurante. Em breve um atendente irá informar o motivo. Se precisar de algo, responda esta mensagem.'
-          );
-        } catch (sendError) {
-          console.error('Erro ao enviar mensagem de cancelamento:', sendError);
-        }
-      }
-
-      console.log('✅ Pedido cancelado e removido:', id);
-      res.json({ success: true });
+      console.log('✅ Pedido excluído permanentemente:', id);
+      res.json({ success: true, message: 'Pedido excluído permanentemente' });
     } catch (error) {
-      console.error('❌ Erro ao cancelar pedido:', error);
+      console.error('❌ Erro ao excluir pedido:', error);
       res.status(500).json({ error: error.message });
     }
   });
