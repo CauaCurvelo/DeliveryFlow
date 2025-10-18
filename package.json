@@ -1,4 +1,9 @@
 {
+  "workspaces": [
+    "api",
+    "painel-admin",
+    "painel-cliente"
+  ],
   "dependencies": {
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
