@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DeliveryFlow - Faça seu Pedido</title>
+    <script>
+      // Captura de erros para debug
+      window.addEventListener('error', function(e) {
+        console.error('❌ ERRO GLOBAL:', e.message, e.filename, e.lineno, e.colno);
+      });
+      
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('❌ PROMISE REJEITADA:', e.reason);
+      });
+      
+      console.log('🚀 index.html carregado - aguardando scripts...');
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      console.log('📍 Body carregado, #root existe:', !!document.getElementById('root'));
+    </script>
+  </body>
+</html>

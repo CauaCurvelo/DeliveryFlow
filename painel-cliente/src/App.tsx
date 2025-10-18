@@ -109,19 +109,18 @@ function App() {
       nome: customerName,
       telefone: customerPhone,
       texto: `Pedido via app - ${orderType === 'local' ? 'Mesa ' + tableNumber : orderType === 'delivery' ? 'Delivery' : 'Retirada'}`,
-      items: cart.map((item, idx) => ({
-        id: idx.toString(),
-        productId: item._id,
-        name: item.nome,
-        quantity: item.quantity,
-        price: item.preco,
+      itens: cart.map((item) => ({
+        produtoId: item._id,
+        nome: item.nome,
+        quantidade: item.quantity,
+        preco: item.preco,
       })),
       status: 'pending',
       total: getTotalPrice(),
-      paymentMethod: 'pending',
-      deliveryMode: orderType,
-      address: orderType === 'delivery' ? address : orderType === 'local' ? `Mesa ${tableNumber}` : 'Retirada no local',
-      notes: notes,
+      metodoPagamento: 'pending',
+      modoEntrega: orderType,
+      endereco: orderType === 'delivery' ? address : orderType === 'local' ? `Mesa ${tableNumber}` : 'Retirada no local',
+      observacoes: notes,
       humanTakeover: false,
     };
 

@@ -126,8 +126,8 @@ const produtosMemoria = [
 
 const botConfigMemoria = {
   horarioFuncionamento: {
-    horaAbertura: '18:00',
-    horaFechamento: '23:00',
+    inicio: '08:00',
+    fim: '22:00',
     diasFuncionamento: ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo']
   }
 };

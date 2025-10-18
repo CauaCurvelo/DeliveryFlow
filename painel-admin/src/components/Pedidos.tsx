@@ -38,6 +38,7 @@ export default function Pedidos({ socket }: PedidosProps) {
   const [filter, setFilter] = useState<string>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Pedido | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchPedidos = async () => {
     try {
@@ -233,9 +234,9 @@ export default function Pedidos({ socket }: PedidosProps) {
       </div>
 
       {/* Orders List */}
-      <div className="grid gap-4">
+      <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {filteredPedidos.length === 0 ? (
-          <Card className="dark:bg-gray-800">
+          <Card className="dark:bg-gray-800 col-span-full">
             <CardContent className="py-12">
               <p className="text-center text-gray-500 dark:text-gray-400">Nenhum pedido encontrado</p>
             </CardContent>
@@ -243,12 +244,51 @@ export default function Pedidos({ socket }: PedidosProps) {
         ) : (
           filteredPedidos.map((pedido) => {
             const StatusIcon = statusConfig[pedido.status]?.icon || AlertCircle;
+            const isExpanded = expandedId === pedido._id;
+            
             return (
-              <Card key={pedido._id} className="border-2 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      {editingId === pedido._id && editForm ? (
+              <Card 
+                key={pedido._id} 
+                className="border-2 hover:shadow-md transition-all dark:bg-gray-800 dark:border-gray-700 cursor-pointer"
+                onClick={() => setExpandedId(isExpanded ? null : pedido._id)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="space-y-2">
+                    {/* Cliente e Status */}
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-sm font-semibold dark:text-white truncate">{pedido.nome}</CardTitle>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{pedido.telefone}</p>
+                      </div>
+                      <Badge className={`${statusConfig[pedido.status]?.color} border flex-shrink-0 flex items-center gap-1 text-xs`}>
+                        <StatusIcon className="w-3 h-3" />
+                        {statusConfig[pedido.status]?.label}
+                      </Badge>
+                    </div>
+                    
+                    {/* Data e Horário */}
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      {new Date(pedido.criadoEm).toLocaleString('pt-BR')}
+                    </p>
+                    
+                    {/* Resumo: Quantidade de itens e Total */}
+                    <div className="flex justify-between items-center pt-2 border-t dark:border-gray-700">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">
+                        {pedido.itens.length} item{pedido.itens.length !== 1 ? 's' : ''}
+                      </span>
+                      <span className="text-sm font-bold dark:text-white">
+                        R$ {pedido.total.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                {/* Conteúdo Expandido */}
+                {isExpanded && (
+                  <CardContent className="space-y-3 border-t dark:border-gray-700 pt-3">
+                    {editingId === pedido._id && editForm ? (
+                      <>
+                        {/* Edição */}
                         <div className="space-y-2">
                           <div className="grid grid-cols-2 gap-2">
                             <div>
@@ -256,7 +296,7 @@ export default function Pedidos({ socket }: PedidosProps) {
                               <Input
                                 value={editForm.nome}
                                 onChange={(e) => setEditForm({ ...editForm, nome: e.target.value })}
-                                className="h-8 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="h-8 text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               />
                             </div>
                             <div>
@@ -264,173 +304,147 @@ export default function Pedidos({ socket }: PedidosProps) {
                               <Input
                                 value={editForm.telefone}
                                 onChange={(e) => setEditForm({ ...editForm, telefone: e.target.value })}
-                                className="h-8 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="h-8 text-xs dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                               />
                             </div>
                           </div>
                         </div>
-                      ) : (
-                        <>
-                          <CardTitle className="text-lg dark:text-white">{pedido.nome}</CardTitle>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{pedido.telefone}</p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                            {new Date(pedido.criadoEm).toLocaleString('pt-BR')}
-                          </p>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {editingId === pedido._id ? (
-                        <>
-                          <Button size="sm" onClick={saveEdit} className="h-8">
+
+                        {/* Items na edição */}
+                        <div>
+                          <h5 className="text-xs font-semibold mb-2 dark:text-white">Itens:</h5>
+                          <div className="space-y-1">
+                            {editForm.itens.map((item, idx) => (
+                              <div key={idx} className="flex items-center justify-between text-xs bg-gray-50 dark:bg-gray-700 p-2 rounded gap-2">
+                                <span className="dark:text-gray-300 flex-1 truncate">{item.nome}</span>
+                                <Input
+                                  type="number"
+                                  min="1"
+                                  value={item.quantidade}
+                                  onChange={(e) => updateItemQuantity(idx, parseInt(e.target.value) || 1)}
+                                  className="w-12 h-6 text-xs dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                />
+                                <span className="font-medium dark:text-white w-16 text-right text-xs">R$ {(item.preco * item.quantidade).toFixed(2)}</span>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeItem(idx)}
+                                  className="h-6 w-6 p-0"
+                                  disabled={editForm.itens.length <= 1}
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 pt-2">
+                          <Button size="sm" onClick={saveEdit} className="flex-1 h-8 text-xs">
                             Salvar
                           </Button>
                           <Button size="sm" variant="outline" onClick={cancelEditing} className="h-8">
-                            <X className="w-4 h-4" />
+                            <X className="w-3 h-3" />
                           </Button>
-                        </>
-                      ) : (
-                        <>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Visualização */}
+                        <div>
+                          <h5 className="text-xs font-semibold mb-2 dark:text-white">Itens:</h5>
+                          <div className="space-y-1">
+                            {pedido.itens.map((item, idx) => (
+                              <div key={idx} className="flex justify-between text-xs bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                                <span className="dark:text-gray-300">{item.quantidade}x {item.nome}</span>
+                                <span className="font-medium dark:text-white">R$ {(item.preco * item.quantidade).toFixed(2)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">Entrega:</span>
+                            <p className="font-medium dark:text-white">{pedido.modoEntrega}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-600 dark:text-gray-400">Pagamento:</span>
+                            <p className="font-medium dark:text-white">{pedido.metodoPagamento}</p>
+                          </div>
+                        </div>
+
+                        {pedido.endereco && (
+                          <div className="text-xs">
+                            <span className="text-gray-600 dark:text-gray-400">Endereço:</span>
+                            <p className="mt-1 dark:text-gray-300 line-clamp-2">{pedido.endereco}</p>
+                          </div>
+                        )}
+
+                        {pedido.observacoes && (
+                          <div className="text-xs">
+                            <span className="text-gray-600 dark:text-gray-400">Observações:</span>
+                            <p className="mt-1 italic dark:text-gray-300 line-clamp-2">{pedido.observacoes}</p>
+                          </div>
+                        )}
+
+                        <div className="flex gap-2 pt-2">
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => startEditing(pedido)}
-                            className="h-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              startEditing(pedido);
+                            }}
+                            className="flex-1 h-8 text-xs"
                           >
-                            <Edit2 className="w-4 h-4" />
+                            <Edit2 className="w-3 h-3 mr-1" />
+                            Editar
                           </Button>
-                          <Badge className={`${statusConfig[pedido.status]?.color} border flex items-center gap-1`}>
-                            <StatusIcon className="w-3 h-3" />
-                            {statusConfig[pedido.status]?.label}
-                          </Badge>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Items */}
-                  <div>
-                    <h4 className="font-medium mb-2 dark:text-white">Itens:</h4>
-                    <div className="space-y-1">
-                      {editingId === pedido._id && editForm ? (
-                        editForm.itens.map((item, idx) => (
-                          <div key={idx} className="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-700 p-2 rounded gap-2">
-                            <span className="dark:text-gray-300 flex-1">{item.nome}</span>
-                            <Input
-                              type="number"
-                              min="1"
-                              value={item.quantidade}
-                              onChange={(e) => updateItemQuantity(idx, parseInt(e.target.value) || 1)}
-                              className="w-16 h-7 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-                            />
-                            <span className="font-medium dark:text-white w-20 text-right">R$ {(item.preco * item.quantidade).toFixed(2)}</span>
+                          {pedido.status !== 'cancelled' && pedido.status !== 'delivered' && (
                             <Button
                               size="sm"
-                              variant="ghost"
-                              onClick={() => removeItem(idx)}
-                              className="h-7 w-7 p-0"
-                              disabled={editForm.itens.length <= 1}
+                              variant="destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cancelOrder(pedido._id);
+                              }}
+                              className="h-8 text-xs"
                             >
-                              <X className="w-3 h-3" />
+                              Cancelar
                             </Button>
+                          )}
+                        </div>
+
+                        {pedido.status !== 'cancelled' && pedido.status !== 'delivered' && (
+                          <div className="flex gap-1 flex-wrap pt-2">
+                            {statusOptions.map((status) => {
+                              const currentIndex = statusOptions.indexOf(pedido.status);
+                              const statusIndex = statusOptions.indexOf(status);
+                              if (statusIndex > currentIndex) {
+                                return (
+                                  <Button
+                                    key={status}
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      updateStatus(pedido._id, status);
+                                    }}
+                                    variant="outline"
+                                    className="h-7 text-xs"
+                                  >
+                                    {statusConfig[status].label}
+                                  </Button>
+                                );
+                              }
+                              return null;
+                            })}
                           </div>
-                        ))
-                      ) : (
-                        pedido.itens.map((item, idx) => (
-                          <div key={idx} className="flex justify-between text-sm bg-gray-50 dark:bg-gray-700 p-2 rounded">
-                            <span className="dark:text-gray-300">{item.quantidade}x {item.nome}</span>
-                            <span className="font-medium dark:text-white">R$ {(item.preco * item.quantidade).toFixed(2)}</span>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Details */}
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">Entrega:</span>
-                      <span className="ml-2 font-medium dark:text-white">
-                        {editingId === pedido._id && editForm ? editForm.modoEntrega : pedido.modoEntrega}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-400">Pagamento:</span>
-                      <span className="ml-2 font-medium dark:text-white">
-                        {editingId === pedido._id && editForm ? editForm.metodoPagamento : pedido.metodoPagamento}
-                      </span>
-                    </div>
-                  </div>
-
-                  {(pedido.endereco || (editingId === pedido._id && editForm?.endereco)) && (
-                    <div className="text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Endereço:</span>
-                      {editingId === pedido._id && editForm ? (
-                        <Textarea
-                          value={editForm.endereco || ''}
-                          onChange={(e) => setEditForm({ ...editForm, endereco: e.target.value })}
-                          className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                          rows={2}
-                        />
-                      ) : (
-                        <p className="mt-1 dark:text-gray-300">{pedido.endereco}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {(pedido.observacoes || (editingId === pedido._id && editForm?.observacoes)) && (
-                    <div className="text-sm">
-                      <span className="text-gray-600 dark:text-gray-400">Observações:</span>
-                      {editingId === pedido._id && editForm ? (
-                        <Textarea
-                          value={editForm.observacoes || ''}
-                          onChange={(e) => setEditForm({ ...editForm, observacoes: e.target.value })}
-                          className="mt-1 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                          rows={2}
-                        />
-                      ) : (
-                        <p className="mt-1 italic dark:text-gray-300">{pedido.observacoes}</p>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex justify-between items-center pt-4 border-t dark:border-gray-700">
-                    <span className="text-xl font-bold dark:text-white">
-                      Total: R$ {editingId === pedido._id && editForm ? editForm.total.toFixed(2) : pedido.total.toFixed(2)}
-                    </span>
-                    <div className="flex gap-2">
-                      {editingId !== pedido._id && pedido.status !== 'cancelled' && pedido.status !== 'delivered' && (
-                        <>
-                          {statusOptions.map((status) => {
-                            const currentIndex = statusOptions.indexOf(pedido.status);
-                            const statusIndex = statusOptions.indexOf(status);
-                            if (statusIndex > currentIndex) {
-                              return (
-                                <Button
-                                  key={status}
-                                  size="sm"
-                                  onClick={() => updateStatus(pedido._id, status)}
-                                  variant="outline"
-                                >
-                                  {statusConfig[status].label}
-                                </Button>
-                              );
-                            }
-                            return null;
-                          })}
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => cancelOrder(pedido._id)}
-                          >
-                            Cancelar
-                          </Button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
+                        )}
+                      </>
+                    )}
+                  </CardContent>
+                )}
               </Card>
             );
           })

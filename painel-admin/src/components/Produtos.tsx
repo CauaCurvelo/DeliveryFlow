@@ -6,7 +6,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
-import { Plus, Edit, Trash2, Package } from 'lucide-react';
+import { Plus, Edit, Trash2, Package, X, Save } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ProdutosProps {
@@ -23,13 +23,22 @@ interface Produto {
   ativo: boolean;
 }
 
+interface FormData {
+  nome: string;
+  descricao: string;
+  preco: string;
+  categoria: string;
+  imagem: string;
+  ativo: boolean;
+}
+
 export default function Produtos({ socket }: ProdutosProps) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'nome' | 'preco-asc' | 'preco-desc' | 'categoria'>('nome');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     nome: '',
     descricao: '',
     preco: '',
@@ -37,6 +46,7 @@ export default function Produtos({ socket }: ProdutosProps) {
     imagem: '',
     ativo: true,
   });
+  const [editForms, setEditForms] = useState<Record<string, FormData>>({});
 
   const fetchProdutos = async () => {
     try {
@@ -112,16 +122,59 @@ export default function Produtos({ socket }: ProdutosProps) {
   };
 
   const handleEdit = (produto: Produto) => {
-    setFormData({
-      nome: produto.nome,
-      descricao: produto.descricao,
-      preco: produto.preco.toString(),
-      categoria: produto.categoria,
-      imagem: produto.imagem,
-      ativo: produto.ativo,
+    setEditForms({
+      ...editForms,
+      [produto._id]: {
+        nome: produto.nome,
+        descricao: produto.descricao,
+        preco: produto.preco.toString(),
+        categoria: produto.categoria,
+        imagem: produto.imagem,
+        ativo: produto.ativo,
+      }
     });
     setEditingId(produto._id);
-    setShowForm(true);
+  };
+
+  const cancelEdit = (id: string) => {
+    const { [id]: removed, ...rest } = editForms;
+    setEditForms(rest);
+    setEditingId(null);
+  };
+
+  const saveEdit = async (id: string) => {
+    const form = editForms[id];
+    if (!form) return;
+
+    const payload = {
+      ...form,
+      preco: parseFloat(form.preco),
+    };
+
+    try {
+      const API_URL = 'http://localhost:4000';
+      await fetch(`${API_URL}/api/produtos/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      toast.success('Produto atualizado!');
+      cancelEdit(id);
+      fetchProdutos();
+    } catch (error) {
+      toast.error('Erro ao salvar produto');
+    }
+  };
+
+  const updateEditForm = (id: string, field: keyof FormData, value: any) => {
+    setEditForms({
+      ...editForms,
+      [id]: {
+        ...editForms[id],
+        [field]: value
+      }
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -321,72 +374,177 @@ export default function Produtos({ socket }: ProdutosProps) {
             </CardContent>
           </Card>
         ) : (
-          sortedProdutos.map((produto) => (
-            <Card key={produto._id} className={`${!produto.ativo ? 'opacity-60' : ''} hover:shadow-lg transition-shadow dark:bg-gray-800`}>
-              <CardContent className="p-4">
-                {produto.imagem ? (
-                  <img
-                    src={produto.imagem}
-                    alt={produto.nome}
-                    className="w-full h-48 object-cover rounded-lg mb-4"
-                  />
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 flex items-center justify-center">
-                    <Package className="w-12 h-12 text-gray-400 dark:text-gray-500" />
-                  </div>
-                )}
+          sortedProdutos.map((produto) => {
+            const isEditing = editingId === produto._id;
+            const form = editForms[produto._id];
 
-                <div className="space-y-3">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-lg dark:text-white">{produto.nome}</h3>
-                    <Badge variant={produto.ativo ? 'default' : 'secondary'}>
-                      {produto.ativo ? 'Ativo' : 'Inativo'}
-                    </Badge>
-                  </div>
+            return (
+              <Card key={produto._id} className={`${!produto.ativo ? 'opacity-60' : ''} hover:shadow-lg transition-shadow dark:bg-gray-800`}>
+                <CardContent className="p-4">
+                  {isEditing && form ? (
+                    // Modo de edição
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-xs dark:text-gray-300">Imagem URL</Label>
+                        <Input
+                          value={form.imagem}
+                          onChange={(e) => updateEditForm(produto._id, 'imagem', e.target.value)}
+                          placeholder="https://..."
+                          className="h-8 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
 
-                  {produto.descricao && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{produto.descricao}</p>
+                      {form.imagem ? (
+                        <img
+                          src={form.imagem}
+                          alt={form.nome}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="w-full h-32 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                          <Package className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+
+                      <div>
+                        <Label className="text-xs dark:text-gray-300">Nome</Label>
+                        <Input
+                          value={form.nome}
+                          onChange={(e) => updateEditForm(produto._id, 'nome', e.target.value)}
+                          className="h-8 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs dark:text-gray-300">Descrição</Label>
+                        <Textarea
+                          value={form.descricao}
+                          onChange={(e) => updateEditForm(produto._id, 'descricao', e.target.value)}
+                          rows={2}
+                          className="text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-xs dark:text-gray-300">Categoria</Label>
+                          <Input
+                            value={form.categoria}
+                            onChange={(e) => updateEditForm(produto._id, 'categoria', e.target.value)}
+                            className="h-8 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs dark:text-gray-300">Preço (R$)</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={form.preco}
+                            onChange={(e) => updateEditForm(produto._id, 'preco', e.target.value)}
+                            className="h-8 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={form.ativo}
+                          onChange={(e) => updateEditForm(produto._id, 'ativo', e.target.checked)}
+                          className="w-4 h-4"
+                        />
+                        <Label className="text-sm dark:text-gray-300">Produto ativo</Label>
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => saveEdit(produto._id)}
+                          className="flex-1"
+                        >
+                          <Save className="w-4 h-4 mr-1" />
+                          Salvar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => cancelEdit(produto._id)}
+                          className="flex-1"
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Cancelar
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Modo de visualização
+                    <>
+                      {produto.imagem ? (
+                        <img
+                          src={produto.imagem}
+                          alt={produto.nome}
+                          className="w-full h-48 object-cover rounded-lg mb-4"
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 flex items-center justify-center">
+                          <Package className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+                        </div>
+                      )}
+
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-lg dark:text-white">{produto.nome}</h3>
+                          <Badge variant={produto.ativo ? 'default' : 'secondary'}>
+                            {produto.ativo ? 'Ativo' : 'Inativo'}
+                          </Badge>
+                        </div>
+
+                        {produto.descricao && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{produto.descricao}</p>
+                        )}
+
+                        {produto.categoria && (
+                          <Badge variant="outline" className="text-xs dark:border-gray-600 dark:text-gray-300">
+                            {produto.categoria}
+                          </Badge>
+                        )}
+
+                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                          R$ {produto.preco.toFixed(2)}
+                        </p>
+
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(produto)}
+                            className="flex-1"
+                          >
+                            <Edit className="w-4 h-4 mr-1" />
+                            Editar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={produto.ativo ? 'outline' : 'default'}
+                            onClick={() => toggleAtivo(produto._id, produto.ativo)}
+                          >
+                            {produto.ativo ? 'Desativar' : 'Ativar'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(produto._id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </>
                   )}
-
-                  {produto.categoria && (
-                    <Badge variant="outline" className="text-xs dark:border-gray-600 dark:text-gray-300">
-                      {produto.categoria}
-                    </Badge>
-                  )}
-
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    R$ {produto.preco.toFixed(2)}
-                  </p>
-
-                  <div className="flex gap-2 pt-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEdit(produto)}
-                      className="flex-1"
-                    >
-                      <Edit className="w-4 h-4 mr-1" />
-                      Editar
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={produto.ativo ? 'outline' : 'default'}
-                      onClick={() => toggleAtivo(produto._id, produto.ativo)}
-                    >
-                      {produto.ativo ? 'Desativar' : 'Ativar'}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDelete(produto._id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardContent>
+              </Card>
+            );
+          })
         )}
       </div>
     </div>

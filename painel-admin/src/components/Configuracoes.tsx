@@ -74,7 +74,7 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
       const API_URL = 'http://localhost:4000';
       const [botRes, tableRes, generalRes] = await Promise.all([
         fetch(`${API_URL}/api/config/bot`),
-        fetch(`${API_URL}/api/config/table`),
+        fetch(`${API_URL}/api/config/tables`),
         fetch(`${API_URL}/api/config/general`),
       ]);
 
@@ -86,7 +86,10 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
         setBotConfig(botData);
       }
       if (tableData) {
-        setTableConfig(tableData);
+        setTableConfig({
+          habilitarMesas: tableData.habilitarMesas !== undefined ? tableData.habilitarMesas : false,
+          numeroMesas: tableData.totalTables || tableData.numeroMesas || 10
+        });
       }
       if (generalData) {
         setBotAtivo(generalData.botAtivo || false);
@@ -116,10 +119,15 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
   const saveTableConfig = async () => {
     try {
       const API_URL = 'http://localhost:4000';
-      await fetch(`${API_URL}/api/config/table`, {
+      // Mapear numeroMesas de volta para totalTables para a API
+      const dataToSend = {
+        habilitarMesas: tableConfig.habilitarMesas,
+        totalTables: tableConfig.numeroMesas
+      };
+      await fetch(`${API_URL}/api/config/tables`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(tableConfig),
+        body: JSON.stringify(dataToSend),
       });
       toast.success('Configurações de mesas salvas!');
     } catch (error) {
