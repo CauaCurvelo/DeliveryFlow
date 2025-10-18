@@ -78,7 +78,7 @@ function createConfigRouter({ botConfigMemoria, tableConfigMemoria, generalConfi
 
   router.put('/general', (req, res) => {
     try {
-      const { taxaEntrega, pedidoMinimo, telefone, whatsapp, instagram, notificacoesSonoras } = req.body;
+      const { taxaEntrega, pedidoMinimo, telefone, whatsapp, instagram, notificacoesSonoras, botAtivo } = req.body;
 
       if (taxaEntrega !== undefined) generalConfigMemoria.taxaEntrega = taxaEntrega;
       if (pedidoMinimo !== undefined) generalConfigMemoria.pedidoMinimo = pedidoMinimo;
@@ -86,6 +86,15 @@ function createConfigRouter({ botConfigMemoria, tableConfigMemoria, generalConfi
       if (whatsapp !== undefined) generalConfigMemoria.whatsapp = whatsapp;
       if (instagram !== undefined) generalConfigMemoria.instagram = instagram;
       if (notificacoesSonoras !== undefined) generalConfigMemoria.notificacoesSonoras = notificacoesSonoras;
+      if (botAtivo !== undefined) {
+        generalConfigMemoria.botAtivo = botAtivo;
+        console.log(`🤖 Bot ${botAtivo ? 'ATIVADO' : 'DESATIVADO'}`);
+        
+        // Atualizar o chatbot se existir
+        if (chatbot) {
+          chatbot.config.botAtivo = botAtivo;
+        }
+      }
 
       console.log('✅ Configurações gerais atualizadas:', generalConfigMemoria);
       io.emit('general-config-atualizada', generalConfigMemoria);

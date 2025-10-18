@@ -142,7 +142,8 @@ const generalConfigMemoria = {
   telefone: '',
   whatsapp: '',
   instagram: '',
-  notificacoesSonoras: true
+  notificacoesSonoras: true,
+  botAtivo: false
 };
 
 module.exports = {

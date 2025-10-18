@@ -9,14 +9,7 @@ git clone https://github.com/CauaCurvelo/DeliveryFlow.git
 
 2. **Instale as dependências em cada pasta:**
 ```bash
-cd api
-npm install
-
-cd ../painel-admin
-npm install
-
-cd ../painel-cliente
-npm install
+cd c:\Users\Cauã\Desktop\DeliveryFlow\api ; npm install ; cd ..\painel-admin ; npm install ; cd ..\painel-cliente ; npm install
 ```
 
 3. **Configuração do banco de dados:**

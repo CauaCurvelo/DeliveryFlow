@@ -1,18 +1,57 @@
-{
+{{{
+
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "CommonJS",
-    "lib": ["DOM", "ESNext"],
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
+
+    "target": "ES2020",  "compilerOptions": {  "compilerOptions": {
+
+    "useDefineForClassFields": true,
+
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],    "target": "ES2020",    "target": "ESNext",
+
+    "module": "ESNext",
+
+    "skipLibCheck": true,    "useDefineForClassFields": true,    "module": "CommonJS",
+
+    "moduleResolution": "bundler",
+
+    "allowImportingTsExtensions": true,    "lib": ["ES2020", "DOM", "DOM.Iterable"],    "lib": ["DOM", "ESNext"],
+
     "resolveJsonModule": true,
-    "isolatedModules": true,
+
+    "isolatedModules": true,    "module": "ESNext",    "jsx": "react-jsx",
+
     "noEmit": true,
+
+    "jsx": "react-jsx",    "skipLibCheck": true,    "esModuleInterop": true,
+
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+
+    "noUnusedLocals": true,    "moduleResolution": "bundler",    "allowSyntheticDefaultImports": true,
+
+    "noUnusedParameters": true,
+
+    "noFallthroughCasesInSwitch": true    "allowImportingTsExtensions": true,    "moduleResolution": "node",
+
   },
-  "include": ["src"]
+
+  "include": ["../src"]    "resolveJsonModule": true,    "resolveJsonModule": true,
+
+}
+    "isolatedModules": true,    "isolatedModules": true,
+
+    "noEmit": true,    "noEmit": true,
+
+    "jsx": "react-jsx",    "strict": true,
+
+    "strict": true,    "forceConsistentCasingInFileNames": true,
+
+    "noUnusedLocals": true,    "skipLibCheck": true
+
+    "noUnusedParameters": true,  },
+
+    "noFallthroughCasesInSwitch": true  "include": ["../src"],
+
+  },}
+
+  "include": ["../src"]
 }

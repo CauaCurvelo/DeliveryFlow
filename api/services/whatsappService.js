@@ -305,7 +305,8 @@ class WhatsAppService {
         const mensagem = msg.body;
         console.log(`📨 ${telefone}: ${mensagem}`);
 
-        if (!this.whatsappBotEnabled) {
+        const { generalConfigMemoria } = require('../storage/memoryStore');
+        if (!generalConfigMemoria.botAtivo) {
           console.log('🤖 Bot desativado, mensagem ignorada');
           return;
         }
