@@ -25,6 +25,10 @@ interface TableConfig {
   numeroMesas: number;
 }
 
+interface DeliveryConfig {
+  taxaEntrega: number;
+}
+
 export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) {
   const [botConfig, setBotConfig] = useState<BotConfig>({
     horarioFuncionamento: {
@@ -37,6 +41,10 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
   const [tableConfig, setTableConfig] = useState<TableConfig>({
     habilitarMesas: false,
     numeroMesas: 10,
+  });
+
+  const [deliveryConfig, setDeliveryConfig] = useState<DeliveryConfig>({
+    taxaEntrega: 5,
   });
 
   const [botAtivo, setBotAtivo] = useState(false);
@@ -72,15 +80,17 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
   const fetchConfigs = async () => {
     try {
       const API_URL = 'http://localhost:4000';
-      const [botRes, tableRes, generalRes] = await Promise.all([
+      const [botRes, tableRes, generalRes, deliveryRes] = await Promise.all([
         fetch(`${API_URL}/api/config/bot`),
         fetch(`${API_URL}/api/config/tables`),
         fetch(`${API_URL}/api/config/general`),
+        fetch(`${API_URL}/api/config/delivery`).catch(() => null),
       ]);
 
       const botData = await botRes.json();
       const tableData = await tableRes.json();
       const generalData = await generalRes.json();
+      const deliveryData = deliveryRes ? await deliveryRes.json() : null;
 
       if (botData.horarioFuncionamento) {
         setBotConfig(botData);
@@ -93,6 +103,9 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
       }
       if (generalData) {
         setBotAtivo(generalData.botAtivo || false);
+      }
+      if (deliveryData && deliveryData.taxaEntrega !== undefined) {
+        setDeliveryConfig(deliveryData);
       }
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
@@ -132,6 +145,20 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
       toast.success('Configurações de mesas salvas!');
     } catch (error) {
       toast.error('Erro ao salvar configurações');
+    }
+  };
+
+  const saveDeliveryConfig = async () => {
+    try {
+      const API_URL = 'http://localhost:4000';
+      await fetch(`${API_URL}/api/config/delivery`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(deliveryConfig),
+      });
+      toast.success('Taxa de entrega salva!');
+    } catch (error) {
+      toast.error('Erro ao salvar taxa de entrega');
     }
   };
 
@@ -391,6 +418,41 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
           <Button onClick={saveTableConfig} className="w-full">
             <Save className="w-4 h-4 mr-2" />
             Salvar Configurações de Mesas
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Delivery Config */}
+      <Card className="dark:bg-gray-800">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <SettingsIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <CardTitle className="dark:text-white">Configurações de Entrega</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="taxaEntrega" className="dark:text-gray-300">Taxa de Entrega (R$)</Label>
+            <Input
+              id="taxaEntrega"
+              type="number"
+              min="0"
+              step="0.50"
+              value={deliveryConfig.taxaEntrega}
+              onChange={(e) => setDeliveryConfig({
+                ...deliveryConfig,
+                taxaEntrega: parseFloat(e.target.value) || 0,
+              })}
+              className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            />
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              Taxa aplicada automaticamente em pedidos com modo de entrega "delivery"
+            </p>
+          </div>
+
+          <Button onClick={saveDeliveryConfig} className="w-full">
+            <Save className="w-4 h-4 mr-2" />
+            Salvar Taxa de Entrega
           </Button>
         </CardContent>
       </Card>

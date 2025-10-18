@@ -76,6 +76,32 @@ function createConfigRouter({ botConfigMemoria, tableConfigMemoria, generalConfi
     res.json(generalConfigMemoria);
   });
 
+  router.get('/delivery', (req, res) => {
+    console.log('📋 Obtendo configurações de entrega');
+    res.json({
+      taxaEntrega: generalConfigMemoria.taxaEntrega || 5
+    });
+  });
+
+  router.put('/delivery', (req, res) => {
+    try {
+      const { taxaEntrega } = req.body;
+
+      if (taxaEntrega !== undefined) {
+        generalConfigMemoria.taxaEntrega = parseFloat(taxaEntrega);
+        console.log(`📦 Taxa de entrega atualizada para R$ ${generalConfigMemoria.taxaEntrega}`);
+        io.emit('delivery-config-atualizada', { taxaEntrega: generalConfigMemoria.taxaEntrega });
+      }
+
+      res.json({
+        taxaEntrega: generalConfigMemoria.taxaEntrega || 5
+      });
+    } catch (error) {
+      console.error('❌ Erro ao salvar taxa de entrega:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   router.put('/general', (req, res) => {
     try {
       const { taxaEntrega, pedidoMinimo, telefone, whatsapp, instagram, notificacoesSonoras, botAtivo } = req.body;

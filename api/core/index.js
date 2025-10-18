@@ -75,7 +75,7 @@ const whatsappService = new WhatsAppService({ io, manager, chatbot });
 
 app.use(
 	'/api/pedidos',
-	createPedidosRouter({ pedidoService, clienteService, io, whatsappService })
+	createPedidosRouter({ pedidoService, clienteService, io, whatsappService, generalConfigMemoria })
 );
 app.use('/api/produtos', createProdutosRouter({ produtoService, io }));
 app.use('/api/clientes', createClientesRouter({ clienteService }));

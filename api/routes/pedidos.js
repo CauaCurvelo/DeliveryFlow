@@ -1,6 +1,4 @@
-const express = require('express');
-
-function createPedidosRouter({ pedidoService, clienteService, io, whatsappService }) {
+function createPedidosRouter({ pedidoService, clienteService, io, whatsappService, generalConfigMemoria }) {
   const router = express.Router();
 
   router.get('/', async (req, res) => {
@@ -19,9 +17,10 @@ function createPedidosRouter({ pedidoService, clienteService, io, whatsappServic
       const modoEntrega = req.body.deliveryMode || req.body.modoEntrega;
       let total = req.body.total;
       
-      // Adicionar taxa de delivery se for delivery
+      // Adicionar taxa de delivery se for delivery, usando o valor configurado
       if (modoEntrega === 'delivery') {
-        total = (total || 0) + 5;
+        const taxaEntrega = generalConfigMemoria?.taxaEntrega || 5;
+        total = (total || 0) + taxaEntrega;
       }
       
       const pedidoData = {

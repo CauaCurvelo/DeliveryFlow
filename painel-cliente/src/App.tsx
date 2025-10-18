@@ -38,6 +38,7 @@ function App() {
   const [notes, setNotes] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
   const [totalTables, setTotalTables] = useState<number>(20);
+  const [taxaEntrega, setTaxaEntrega] = useState<number>(5);
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
@@ -50,6 +51,16 @@ function App() {
         }
       })
       .catch(err => console.log('Usando 20 mesas como padrão'));
+    
+    // Carregar configuração de taxa de entrega
+    fetch('http://localhost:4000/api/config/delivery')
+      .then(res => res.json())
+      .then(data => {
+        if (data.taxaEntrega !== undefined) {
+          setTaxaEntrega(data.taxaEntrega);
+        }
+      })
+      .catch(err => console.log('Usando R$ 5 como taxa padrão'));
   }, []);
 
   useEffect(() => {
@@ -521,12 +532,12 @@ function App() {
               {orderType === 'delivery' && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Taxa de Entrega</span>
-                  <span className="font-semibold">{formatCurrency(5)}</span>
+                  <span className="font-semibold">{formatCurrency(taxaEntrega)}</span>
                 </div>
               )}
               <div className="border-t pt-2 flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span className="text-green-500">{formatCurrency(getTotalPrice() + (orderType === 'delivery' ? 5 : 0))}</span>
+                <span className="text-green-500">{formatCurrency(getTotalPrice() + (orderType === 'delivery' ? taxaEntrega : 0))}</span>
               </div>
             </CardContent>
           </Card>
@@ -578,7 +589,7 @@ function App() {
               )}
               <div className="pt-3 border-t border-green-200">
                 <p className="text-2xl font-bold text-green-700">
-                  Total: {formatCurrency(getTotalPrice() + (orderType === 'delivery' ? 5 : 0))}
+                  Total: {formatCurrency(getTotalPrice() + (orderType === 'delivery' ? taxaEntrega : 0))}
                 </p>
               </div>
             </div>
