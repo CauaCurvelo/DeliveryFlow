@@ -16,15 +16,23 @@ function createPedidosRouter({ pedidoService, clienteService, io, whatsappServic
 
   router.post('/', async (req, res) => {
     try {
+      const modoEntrega = req.body.deliveryMode || req.body.modoEntrega;
+      let total = req.body.total;
+      
+      // Adicionar taxa de delivery se for delivery
+      if (modoEntrega === 'delivery') {
+        total = (total || 0) + 5;
+      }
+      
       const pedidoData = {
         nome: req.body.customerName || req.body.nome,
         telefone: req.body.customerPhone || req.body.telefone,
         texto: req.body.texto,
         itens: req.body.items || req.body.itens,
         status: req.body.status || 'pending',
-        total: req.body.total,
+        total: total,
         metodoPagamento: req.body.paymentMethod || req.body.metodoPagamento,
-        modoEntrega: req.body.deliveryMode || req.body.modoEntrega,
+        modoEntrega: modoEntrega,
         endereco: req.body.address || req.body.endereco,
         observacoes: req.body.notes || req.body.observacoes,
         humanTakeover: req.body.humanTakeover || false,
