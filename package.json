@@ -16,6 +16,10 @@
     "tailwind-merge": "^3.3.1"
   },
   "scripts": {
-    "dev": "node -e \"console.log('Escolha um painel para rodar: cd painel-admin && npm run dev OU cd painel-cliente && npm run dev')\""
+    "dev": "node -e \"console.log('Escolha um painel para rodar: cd painel-admin && npm run dev OU cd painel-cliente && npm run dev')\"",
+    "dev:all": "start cmd /k \"npm run dev:api\" & start cmd /k \"npm run dev:admin\" & start cmd /k \"npm run dev:cliente\"",
+    "dev:api": "cd api && npm start",
+    "dev:admin": "cd painel-admin && npm run dev",
+    "dev:cliente": "cd painel-cliente && npm run dev"
   }
 }

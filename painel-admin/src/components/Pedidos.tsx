@@ -44,7 +44,7 @@ export default function Pedidos({ socket }: PedidosProps) {
 
   const fetchPedidos = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/pedidos`);
       const data = await res.json();
       setPedidos(data.sort((a: Pedido, b: Pedido) => 
@@ -78,7 +78,7 @@ export default function Pedidos({ socket }: PedidosProps) {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -98,7 +98,7 @@ export default function Pedidos({ socket }: PedidosProps) {
     }
 
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -117,7 +117,7 @@ export default function Pedidos({ socket }: PedidosProps) {
     if (!confirm('Tem certeza que deseja EXCLUIR permanentemente este pedido? Esta ação não pode ser desfeita!')) return;
     
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'DELETE',
       });
@@ -159,7 +159,7 @@ export default function Pedidos({ socket }: PedidosProps) {
         return;
       }
 
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -204,6 +204,7 @@ export default function Pedidos({ socket }: PedidosProps) {
     setEditForm({ ...editForm, itens: newItens, total: newTotal });
   };
 
+
   const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
     pending: { label: 'Pendente', color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: Clock },
     confirmed: { label: 'Confirmado', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: CheckCircle },
@@ -214,6 +215,21 @@ export default function Pedidos({ socket }: PedidosProps) {
   };
 
   const statusOptions = ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
+
+  const entregaLabels: Record<string, string> = {
+    delivery: 'Entrega',
+    pickup: 'Retirada no local',
+    local: 'Mesa',
+  };
+  const pagamentoLabels: Record<string, string> = {
+    pending: 'Pendente',
+    dinheiro: 'Dinheiro',
+    pix: 'Pix',
+    cartao: 'Cartão',
+    credito: 'Cartão de crédito',
+    debito: 'Cartão de débito',
+    pago: 'Pago',
+  };
 
   const filteredPedidos = filter === 'all' 
     ? pedidos 
@@ -389,11 +405,11 @@ export default function Pedidos({ socket }: PedidosProps) {
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div>
                             <span className="text-gray-600 dark:text-gray-400">Entrega:</span>
-                            <p className="font-medium dark:text-white">{pedido.modoEntrega}</p>
+                            <p className="font-medium dark:text-white">{entregaLabels[pedido.modoEntrega] || pedido.modoEntrega}</p>
                           </div>
                           <div>
                             <span className="text-gray-600 dark:text-gray-400">Pagamento:</span>
-                            <p className="font-medium dark:text-white">{pedido.metodoPagamento}</p>
+                            <p className="font-medium dark:text-white">{pagamentoLabels[pedido.metodoPagamento] || pedido.metodoPagamento}</p>
                           </div>
                         </div>
 
@@ -535,3 +551,4 @@ export default function Pedidos({ socket }: PedidosProps) {
     </div>
   );
 }
+

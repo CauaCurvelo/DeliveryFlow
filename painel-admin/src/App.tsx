@@ -30,7 +30,9 @@ function App() {
 
   useEffect(() => {
     const socketInstance = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
+      reconnection: true,
+      reconnectionDelay: 1000,
     });
 
     socketInstance.on('connect', () => {

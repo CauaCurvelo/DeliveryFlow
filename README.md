@@ -1,41 +1,48 @@
 # DeliveryFlow
 
-Sistema de gerenciamento de entregas com integração WhatsApp. Inclui painel administrativo, painel do cliente e API backend.
+>Sistema de entregas com integração WhatsApp, painel admin, painel cliente e API backend.
 
-## Quick Start
+## Instalação Rápida
 
-### 1. Instalação
 ```bash
-git clone https://github.com/CauaCurvelo/DeliveryFlow.git
-npm install  # ou instale manualmente: api, painel-admin, painel-cliente
+# Clone o projeto
+ git clone https://github.com/CauaCurvelo/DeliveryFlow.git
+ cd DeliveryFlow
+
+# Instale dependências
+ npm install
+
+# Configure o banco (opcional)
+ cd api
+ echo MONGODB_URI=mongodb://localhost:27017/deliveryflow > .env
+ echo PORT=3000 >> .env
+
+# Inicie os serviços
+ cd ..
+ npm run dev:all
 ```
 
-### 2. Banco de dados
-Configure MongoDB no arquivo `.env` da pasta `api`:
-```
-MONGODB_URI=mongodb://localhost:27017/deliveryflow
-```
-Alternativas: MongoDB Atlas, Render, etc.
+- Painel Admin: http://localhost:5173
+- Painel Cliente: http://localhost:5174
+- API: http://localhost:3000
 
-### 3. Iniciar
-```bash
-# Terminal 1 (Backend)
-cd api && npm start
+## Conectar WhatsApp
+Abra o Painel Admin e escaneie o QR Code com o WhatsApp.
 
-# Terminal 2 (Painel Admin)
-cd painel-admin && npm run dev
+## Problemas comuns
+- Sem MongoDB? O sistema roda em modo memória (dados temporários).
+- WhatsApp não conecta? Rode:
+  ```bash
+  cd api
+  npm run clear-session
+  npm start
+  ```
 
-# Terminal 3 (Painel Cliente)
-cd painel-cliente && npm run dev
-```
+## Scripts úteis
+- `npm run dev:all` — Inicia tudo
+- `npm run dev:api` — Só API
+- `npm run dev:admin` — Só painel admin
+- `npm run dev:cliente` — Só painel cliente
 
-Acesse:
-- **Painel Admin**: http://localhost:5173
-- **Painel Cliente**: http://localhost:5174
-- **API**: http://localhost:3000
-
-## Problemas com WhatsApp
-Na pasta `api`:
-- `npm run fix-whatsapp` — Se QR code não conectar
-- `npm run clear-session` — Se der erro de autenticação
-- `npm run fresh-start` — Limpa e inicia o backend
+---
+Feito por [CauaCurvelo](https://github.com/CauaCurvelo)

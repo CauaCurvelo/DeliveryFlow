@@ -79,7 +79,7 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
 
   const fetchConfigs = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       const [botRes, tableRes, generalRes, deliveryRes] = await Promise.all([
         fetch(`${API_URL}/api/config/bot`),
         fetch(`${API_URL}/api/config/tables`),
@@ -117,7 +117,7 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
 
   const saveBotConfig = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/config/bot`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -131,7 +131,7 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
 
   const saveTableConfig = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       const dataToSend = {
         habilitarMesas: tableConfig.habilitarMesas,
         totalTables: tableConfig.numeroMesas
@@ -149,7 +149,7 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
 
   const saveDeliveryConfig = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/config/delivery`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -163,7 +163,7 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
 
   const toggleBot = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       const newStatus = !botAtivo;
       await fetch(`${API_URL}/api/config/general`, {
         method: 'PUT',
@@ -458,3 +458,4 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
     </div>
   );
 }
+

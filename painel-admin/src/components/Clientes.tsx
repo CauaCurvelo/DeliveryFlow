@@ -22,7 +22,7 @@ export default function Clientes({ }: ClientesProps) {
 
   const fetchClientes = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/clientes`);
       const data = await res.json();
       setClientes(data.sort((a: Cliente, b: Cliente) => 
@@ -44,7 +44,7 @@ export default function Clientes({ }: ClientesProps) {
     if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
     
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/clientes/${id}`, {
         method: 'DELETE',
       });
@@ -116,3 +116,4 @@ export default function Clientes({ }: ClientesProps) {
     </div>
   );
 }
+

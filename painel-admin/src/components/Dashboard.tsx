@@ -36,7 +36,7 @@ export default function Dashboard({ socket }: DashboardProps) {
 
   const fetchStats = async () => {
     try {
-      const API_URL = 'http://localhost:4000';
+      const API_URL = 'http://localhost:3000';
       const [pedidosRes, clientesRes, produtosRes] = await Promise.all([
         fetch(`${API_URL}/api/pedidos`),
         fetch(`${API_URL}/api/clientes`),
@@ -228,3 +228,4 @@ export default function Dashboard({ socket }: DashboardProps) {
     </div>
   );
 }
+
