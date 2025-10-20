@@ -211,7 +211,6 @@ export default function Produtos({ socket }: ProdutosProps) {
     return <div className="text-center py-12">Carregando...</div>;
   }
 
-  // Função de ordenação
   const sortedProdutos = [...produtos].sort((a, b) => {
     switch (sortBy) {
       case 'nome':
@@ -382,7 +381,6 @@ export default function Produtos({ socket }: ProdutosProps) {
               <Card key={produto._id} className={`${!produto.ativo ? 'opacity-60' : ''} hover:shadow-lg transition-shadow dark:bg-gray-800`}>
                 <CardContent className="p-4">
                   {isEditing && form ? (
-                    // Modo de edição
                     <div className="space-y-4">
                       <div>
                         <Label className="text-xs dark:text-gray-300">Imagem URL</Label>
@@ -477,7 +475,6 @@ export default function Produtos({ socket }: ProdutosProps) {
                       </div>
                     </div>
                   ) : (
-                    // Modo de visualização
                     <>
                       {produto.imagem ? (
                         <img

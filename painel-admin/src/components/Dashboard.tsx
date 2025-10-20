@@ -68,7 +68,6 @@ export default function Dashboard({ socket }: DashboardProps) {
         produtosAtivos,
       });
 
-      // Últimos 5 pedidos
       const sorted = pedidos.sort((a: any, b: any) => 
         new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
       );

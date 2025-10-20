@@ -42,7 +42,6 @@ function App() {
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
-    // Carregar configuração de mesas
     fetch('http://localhost:4000/api/config/tables')
       .then(res => res.json())
       .then(data => {
@@ -52,7 +51,6 @@ function App() {
       })
       .catch(err => console.log('Usando 20 mesas como padrão'));
     
-    // Carregar configuração de taxa de entrega
     fetch('http://localhost:4000/api/config/delivery')
       .then(res => res.json())
       .then(data => {

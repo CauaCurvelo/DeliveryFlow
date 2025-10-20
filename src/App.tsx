@@ -41,7 +41,6 @@ function App() {
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
-    // Carregar configuração de mesas
     fetch('/api/config/tables')
       .then(res => res.json())
       .then(data => {

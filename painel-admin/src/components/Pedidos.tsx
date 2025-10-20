@@ -141,7 +141,6 @@ export default function Pedidos({ socket }: PedidosProps) {
   const saveEdit = async () => {
     if (!editForm || !editingId) return;
 
-    // Validação
     try {
       if (!editForm.nome?.trim()) {
         toast.error('Nome do cliente é obrigatório');

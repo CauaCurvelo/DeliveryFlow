@@ -1,9 +1,7 @@
-// Script para popular o banco de dados com dados de exemplo
 const mongoose = require('mongoose');
 
 console.log('🌱 Populando banco de dados...');
 
-// Conectar ao MongoDB
 mongoose.connect('mongodb://localhost:27017/deliveryflow', { 
   useNewUrlParser: true, 
   useUnifiedTopology: true 
@@ -14,7 +12,6 @@ mongoose.connect('mongodb://localhost:27017/deliveryflow', {
   process.exit(1);
 });
 
-// Schemas
 const pedidoSchema = new mongoose.Schema({
   nome: String,
   telefone: String,
@@ -44,7 +41,6 @@ const produtoSchema = new mongoose.Schema({
 const Pedido = mongoose.model('Pedido', pedidoSchema);
 const Produto = mongoose.model('Produto', produtoSchema);
 
-// Dados de exemplo
 const produtos = [
   {
     nome: 'Pizza Margherita G',
@@ -117,7 +113,7 @@ const pedidos = [
     endereco: 'Rua das Flores, 123 - Apto 45',
     observacoes: 'Sem cebola',
     humanTakeover: false,
-    criadoEm: new Date(Date.now() - 5 * 60000), // 5 minutos atrás
+    criadoEm: new Date(Date.now() - 5 * 60000),
     atualizadoEm: new Date(Date.now() - 5 * 60000)
   },
   {
@@ -132,7 +128,7 @@ const pedidos = [
     endereco: 'Av. Principal, 456',
     observacoes: 'Ponto da carne: mal passado',
     humanTakeover: false,
-    criadoEm: new Date(Date.now() - 15 * 60000), // 15 minutos atrás
+    criadoEm: new Date(Date.now() - 15 * 60000),
     atualizadoEm: new Date(Date.now() - 10 * 60000)
   },
   {
@@ -147,7 +143,7 @@ const pedidos = [
     endereco: '',
     observacoes: 'Suco de laranja',
     humanTakeover: false,
-    criadoEm: new Date(Date.now() - 25 * 60000), // 25 minutos atrás
+    criadoEm: new Date(Date.now() - 25 * 60000),
     atualizadoEm: new Date(Date.now() - 5 * 60000)
   },
   {
@@ -162,7 +158,7 @@ const pedidos = [
     endereco: 'Rua dos Pinheiros, 789',
     observacoes: '',
     humanTakeover: false,
-    criadoEm: new Date(Date.now() - 40 * 60000), // 40 minutos atrás
+    criadoEm: new Date(Date.now() - 40 * 60000),
     atualizadoEm: new Date(Date.now() - 2 * 60000)
   },
   {
@@ -177,7 +173,7 @@ const pedidos = [
     endereco: 'Rua das Acácias, 321',
     observacoes: 'Interfone 32',
     humanTakeover: false,
-    criadoEm: new Date(Date.now() - 2 * 60000), // 2 minutos atrás
+    criadoEm: new Date(Date.now() - 2 * 60000),
     atualizadoEm: new Date(Date.now() - 2 * 60000)
   },
   {
@@ -192,23 +188,20 @@ const pedidos = [
     endereco: '',
     observacoes: 'Cliente solicitou atendimento humano',
     humanTakeover: true,
-    criadoEm: new Date(Date.now() - 1 * 60000), // 1 minuto atrás
+    criadoEm: new Date(Date.now() - 1 * 60000),
     atualizadoEm: new Date(Date.now() - 1 * 60000)
   }
 ];
 
 async function seed() {
   try {
-    // Limpar dados existentes
     await Produto.deleteMany({});
     await Pedido.deleteMany({});
     console.log('🗑️  Dados antigos removidos');
 
-    // Inserir produtos
     const produtosInseridos = await Produto.insertMany(produtos);
     console.log(`✅ ${produtosInseridos.length} produtos inseridos`);
 
-    // Inserir pedidos
     const pedidosInseridos = await Pedido.insertMany(pedidos);
     console.log(`✅ ${pedidosInseridos.length} pedidos inseridos`);
 
@@ -220,5 +213,4 @@ async function seed() {
   }
 }
 
-// Aguardar conexão e executar
 setTimeout(seed, 1000);

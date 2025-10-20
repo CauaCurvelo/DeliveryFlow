@@ -132,7 +132,6 @@ export default function Configuracoes({ onDarkModeChange }: ConfiguracoesProps) 
   const saveTableConfig = async () => {
     try {
       const API_URL = 'http://localhost:4000';
-      // Mapear numeroMesas de volta para totalTables para a API
       const dataToSend = {
         habilitarMesas: tableConfig.habilitarMesas,
         totalTables: tableConfig.numeroMesas

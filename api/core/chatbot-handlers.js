@@ -1,44 +1,29 @@
-// ============================================
-// CHATBOT FLOW - Parte 2: Handlers de Coleta
-// ============================================
-
-// Continuação da classe ChatbotFlow
-
-// Handler: Coleta de produtos com entrada livre
 async function handleColetaProdutos(sessao, mensagem, nlp) {
   const msgLower = mensagem.toLowerCase().trim();
 
-  // Se pedir cardápio, mostrar cardápio
   if (nlp.intent === 'ver_cardapio' || msgLower === 'cardápio') {
     return await this.mostrarCardapio(sessao);
   }
 
-  // Se digitar "pronto", ir para próximo passo
-    if (msgLower === 'pronto' || msgLower === 'é isso' || msgLower === 'só isso') {
-      if (sessao.pedido.produtos.length === 0) {
-        return '😅 Você ainda não adicionou nenhum produto!\n\nDigite o que deseja, por exemplo:\n_"1 Pizza Margherita"_';
-      }
-      // Importa ESTADOS do chatbot-flow.js
-      const { ESTADOS } = require('./chatbot-flow');
-      return await this.perguntarObservacao(sessao, ESTADOS);
+  if (msgLower === 'pronto' || msgLower === 'é isso' || msgLower === 'só isso') {
+    if (sessao.pedido.produtos.length === 0) {
+      return '😅 Você ainda não adicionou nenhum produto!\n\nDigite o que deseja, por exemplo:\n_"1 Pizza Margherita"_';
     }
+    const { ESTADOS } = require('./chatbot-flow');
+    return await this.perguntarObservacao(sessao, ESTADOS);
+  }
 
-
-  // Tentar identificar produtos na mensagem
   const produtosIdentificados = await this.identificarProdutos(mensagem);
   const produtosValidos = produtosIdentificados.filter(p => p.nome && p.nome.trim() !== '' && p.preco && p.preco > 0);
   const produtosInvalidos = produtosIdentificados.filter(p => !p.nome || !p.preco || p.preco === 0);
 
   if (produtosValidos.length > 0) {
-    // Adicionar produtos válidos ao pedido, somando quantidades se já existe
     produtosValidos.forEach(p => {
-      // Validação: quantidade mínima 1, máxima 99
       if (typeof p.quantidade !== 'number' || isNaN(p.quantidade) || p.quantidade < 1) p.quantidade = 1;
       if (p.quantidade > 99) p.quantidade = 99;
       const idx = sessao.pedido.produtos.findIndex(prod => prod.produtoId && prod.produtoId.toString() === p.produtoId.toString());
       if (idx !== -1) {
         sessao.pedido.produtos[idx].quantidade += p.quantidade;
-        // Se passar de 99, limita
         if (sessao.pedido.produtos[idx].quantidade > 99) sessao.pedido.produtos[idx].quantidade = 99;
       } else {
         sessao.pedido.produtos.push({ ...p });
@@ -65,17 +50,14 @@ async function handleColetaProdutos(sessao, mensagem, nlp) {
     return resposta;
   }
 
-  // Tentar entrada livre completa (com endereço, pagamento, etc)
   const entradaCompleta = await this.analisarEntradaLivre(sessao, mensagem, nlp);
   if (entradaCompleta) {
     return entradaCompleta;
   }
 
-  // Não conseguiu identificar produto
   return '🤔 Não consegui identificar esse produto.\n\nTente escrever o nome completo, como:\n_"Pizza Margherita"_\n_"X-Burger Bacon"_\n\nOu digite *cardápio* para ver as opções.';
 }
 
-// Identificar produtos na mensagem
 async function identificarProdutos(mensagem) {
   try {
     const Fuse = require('fuse.js');
@@ -86,7 +68,6 @@ async function identificarProdutos(mensagem) {
     if (isMongoConnected) {
       produtos = await this.Produto.find({ ativo: true });
     } else {
-      // Fallback to memory
       produtos = [
         { _id: 'P1', nome: 'Pizza Margherita G', preco: 45.00, ativo: true },
         { _id: 'P2', nome: 'X-Burger Bacon', preco: 28.00, ativo: true },
@@ -109,7 +90,6 @@ async function identificarProdutos(mensagem) {
     const identificados = [];
     const msgLower = mensagem.toLowerCase();
 
-    // Normalizar nomes dos produtos APÓS carregar do banco
     const produtosNormalizados = produtos.map(p => ({
       _id: p._id,
       nomeOriginal: p.nome,
@@ -119,35 +99,29 @@ async function identificarProdutos(mensagem) {
 
     console.log('[DEBUG] identificarProdutos - Produtos normalizados:', produtosNormalizados.map(p => p.nome));
 
-    // Fuzzy search setup com threshold MAIS TOLERANTE
     const fuse = new Fuse(produtosNormalizados, {
       keys: ['nome'],
-      threshold: 0.6, // Aumentado de 0.4 para 0.6 (mais tolerante)
+      threshold: 0.6,
       minMatchCharLength: 3,
       ignoreLocation: true,
       includeScore: true,
       distance: 100
     });
 
-    // Dividir mensagem por ' e ', ',' ou múltiplos espaços
     const partes = msgLower.split(/\s+e\s+|,\s*|\s{2,}/gi).map(p => p.trim()).filter(Boolean);
     console.log('[DEBUG] identificarProdutos - Partes da mensagem:', partes);
 
-    // Novo parser: junta números isolados à próxima parte
     let partesCorrigidas = [];
     for (let i = 0; i < partes.length; i++) {
       if (/^\d+$/.test(partes[i]) && i < partes.length - 1) {
-        // Se parte é só número, junta com próxima
         partesCorrigidas.push(partes[i] + ' ' + partes[i + 1]);
-        i++; // pula próxima
+        i++;
       } else if (!/^\d+$/.test(partes[i])) {
         partesCorrigidas.push(partes[i]);
       }
-      // Se for só número e última, ignora
     }
     console.log('[DEBUG] identificarProdutos - Partes corrigidas:', partesCorrigidas);
 
-    // Para cada parte, tentar encontrar quantidade + produto
     const regex = /^(\d+)\s*x?\s*(.+)$/i;
     partesCorrigidas.forEach(parte => {
       let match = regex.exec(parte);
@@ -159,7 +133,6 @@ async function identificarProdutos(mensagem) {
         nomeProduto = match[2].trim();
       }
 
-      // Normalizar nome do produto buscado
       const nomeProdutoNorm = nomeProduto.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       console.log('[DEBUG] identificarProdutos - Buscando:', nomeProdutoNorm, '| Quantidade:', quantidade);
 
@@ -177,7 +150,6 @@ async function identificarProdutos(mensagem) {
         });
       } else {
         console.log('[DEBUG] identificarProdutos - Produto NÃO encontrado:', nomeProdutoNorm);
-        // Produto não identificado
         identificados.push({
           produtoId: '',
           nome: nomeProduto,
@@ -195,18 +167,15 @@ async function identificarProdutos(mensagem) {
   }
 }
 
-// Analisar entrada livre completa
 async function analisarEntradaLivre(sessao, mensagem, nlp) {
   const msgLower = mensagem.toLowerCase();
   
-  // Verificar se menciona endereço
   const enderecoMatch = msgLower.match(/(?:rua|av|avenida|travessa)\s+(.+?)(?=\s+pag|$)/i);
   if (enderecoMatch) {
     sessao.pedido.endereco = enderecoMatch[0];
     sessao.pedido.modoEntrega = 'delivery';
   }
 
-  // Verificar modo de entrega
   if (nlp.intent === 'entrega' || msgLower.includes('entregar') || msgLower.includes('delivery')) {
     sessao.pedido.modoEntrega = 'delivery';
   }
@@ -214,7 +183,6 @@ async function analisarEntradaLivre(sessao, mensagem, nlp) {
     sessao.pedido.modoEntrega = 'retirada';
   }
 
-  // Verificar pagamento
   if (nlp.intent === 'pix' || msgLower.includes('pix')) {
     sessao.pedido.pagamento = 'pix';
   }
@@ -225,26 +193,21 @@ async function analisarEntradaLivre(sessao, mensagem, nlp) {
     sessao.pedido.pagamento = 'cartao';
   }
 
-  // Se identificou tudo, pular etapas
   if (sessao.pedido.produtos.length > 0 && 
       sessao.pedido.modoEntrega && 
       sessao.pedido.pagamento) {
     
     if (sessao.pedido.modoEntrega === 'delivery' && !sessao.pedido.endereco) {
-      // Falta só o endereço
       return await this.perguntarEndereco(sessao);
     }
 
-    // Tem tudo, ir para confirmação
     return await this.mostrarConfirmacao(sessao);
   }
 
   return null;
 }
 
-// Perguntar observação
 async function perguntarObservacao(sessao) {
-  // Recebe ESTADOS como segundo argumento
   const ESTADOS = arguments[1];
   this.atualizarEstado(sessao, ESTADOS.COLETANDO_OBSERVACAO);
   const msg = '📝 Alguma observação sobre o pedido?\n\nPor exemplo:\n• _Sem cebola_\n• _Bem passado_\n• _Caprichar no molho_\n\nOu digite *não* para pular.';
@@ -252,11 +215,9 @@ async function perguntarObservacao(sessao) {
   return msg;
 }
 
-// Handler: Coleta de observação
 async function handleColetaObservacao(sessao, mensagem) {
   const msgLower = mensagem.toLowerCase().trim();
 
-  // Palavras-chave para atendimento humano (apenas se a mensagem for EXATAMENTE igual)
   const keywords = [
     'atendente',
     'humano',
@@ -268,7 +229,6 @@ async function handleColetaObservacao(sessao, mensagem) {
   const pedeAtendente = keywords.includes(msgLower);
 
   if (pedeAtendente) {
-    // Importa ESTADOS do chatbot-flow.js
     const { ESTADOS, CONFIG } = require('./chatbot-flow');
     this.atualizarEstado(sessao, ESTADOS.AGUARDANDO_ATENDENTE);
     sessao.pedido.humanTakeover = true;
@@ -282,9 +242,7 @@ async function handleColetaObservacao(sessao, mensagem) {
   return await this.perguntarModoEntrega(sessao);
 }
 
-// Perguntar modo de entrega
 async function perguntarModoEntrega(sessao) {
-  // Importa ESTADOS do chatbot-flow.js
   const { ESTADOS } = require('./chatbot-flow');
   this.atualizarEstado(sessao, ESTADOS.ESCOLHENDO_MODO);
   const msg = '🚗 Como prefere receber?\n\n1️⃣ *Entrega* (delivery) 🏠\n2️⃣ *Retirada* (buscar no local) 🏃\n\nDigite *1* ou *2*';
@@ -292,7 +250,6 @@ async function perguntarModoEntrega(sessao) {
   return msg;
 }
 
-// Handler: Escolha do modo de entrega
 async function handleEscolhaModo(sessao, mensagem, nlp) {
   const msgLower = mensagem.toLowerCase().trim();
 
@@ -309,9 +266,7 @@ async function handleEscolhaModo(sessao, mensagem, nlp) {
   return '🤔 Por favor, escolha:\n\n1 - Entrega (delivery)\n2 - Retirada';
 }
 
-// Perguntar endereço
 async function perguntarEndereco(sessao) {
-  // Importa ESTADOS e CONFIG do chatbot-flow.js
   const { ESTADOS, CONFIG } = require('./chatbot-flow');
   this.atualizarEstado(sessao, ESTADOS.COLETANDO_ENDERECO);
   const msg = `📍 Qual o endereço para entrega?\n\nDigite o endereço completo:\n_Rua, número, complemento (se houver)_\n\n💡 Taxa de entrega: R$ ${CONFIG.taxaEntrega.toFixed(2)}`;
@@ -319,19 +274,15 @@ async function perguntarEndereco(sessao) {
   return msg;
 }
 
-// Handler: Coleta de endereço
 async function handleColetaEndereco(sessao, mensagem) {
   sessao.pedido.endereco = mensagem;
   return await this.mostrarConfirmacao(sessao);
 }
 
-// Mostrar confirmação do pedido
 async function mostrarConfirmacao(sessao) {
-  // Importa ESTADOS e CONFIG do chatbot-flow.js
   const { ESTADOS, CONFIG } = require('./chatbot-flow');
   this.atualizarEstado(sessao, ESTADOS.CONFIRMANDO_PEDIDO);
 
-  // Calcular total
   let subtotal = 0;
   sessao.pedido.produtos.forEach(p => {
     subtotal += p.preco * p.quantidade;
@@ -370,7 +321,6 @@ async function mostrarConfirmacao(sessao) {
   return msg;
 }
 
-// Handler: Confirmação do pedido
 async function handleConfirmacao(sessao, mensagem, nlp) {
   const msgLower = mensagem.toLowerCase().trim();
 
@@ -386,9 +336,7 @@ async function handleConfirmacao(sessao, mensagem, nlp) {
   return '🤔 Por favor, confirme o pedido digitando *sim* ou *não*.';
 }
 
-// Perguntar forma de pagamento
 async function perguntarPagamento(sessao) {
-  // Importa ESTADOS do chatbot-flow.js
   const { ESTADOS } = require('./chatbot-flow');
   this.atualizarEstado(sessao, ESTADOS.ESCOLHENDO_PAGAMENTO);
   const msg = '💳 *FORMA DE PAGAMENTO*\n\nComo deseja pagar?\n\n1️⃣ *PIX* 🔵\n2️⃣ *Dinheiro* 💵\n3️⃣ *Cartão* (na entrega) 💳\n\nDigite o número ou o nome da opção.';
@@ -396,7 +344,6 @@ async function perguntarPagamento(sessao) {
   return msg;
 }
 
-// Handler: Escolha de pagamento
 async function handleEscolhaPagamento(sessao, mensagem, nlp) {
   const msgLower = mensagem.toLowerCase().trim();
 
@@ -418,7 +365,6 @@ async function handleEscolhaPagamento(sessao, mensagem, nlp) {
   return '🤔 Por favor, escolha:\n\n1 - PIX\n2 - Dinheiro\n3 - Cartão';
 }
 
-// Processar pagamento PIX
 async function processarPix(sessao) {
   const { ESTADOS } = require('./chatbot-flow');
   this.atualizarEstado(sessao, ESTADOS.PROCESSANDO_PIX);
@@ -427,7 +373,6 @@ async function processarPix(sessao) {
   return msg;
 }
 
-// Handler: Confirmação PIX
 async function handlePix(sessao, mensagem) {
   const msgLower = mensagem.toLowerCase().trim();
   
@@ -438,7 +383,6 @@ async function handlePix(sessao, mensagem) {
   return '✅ Comprovante recebido!\n\nDigite *pago* quando tiver finalizado o pagamento.';
 }
 
-// Perguntar sobre troco
 async function perguntarTroco(sessao) {
   const { ESTADOS } = require('./chatbot-flow');
   this.atualizarEstado(sessao, ESTADOS.PROCESSANDO_DINHEIRO);
@@ -447,7 +391,6 @@ async function perguntarTroco(sessao) {
   return msg;
 }
 
-// Handler: Troco
 async function handleDinheiro(sessao, mensagem) {
   const msgLower = mensagem.toLowerCase().trim();
   
@@ -456,7 +399,6 @@ async function handleDinheiro(sessao, mensagem) {
     return await this.finalizarPedido(sessao);
   }
 
-  // Tentar extrair valor numérico
   const valorMatch = mensagem.match(/(\d+(?:[.,]\d{1,2})?)/);
   if (valorMatch) {
     const valor = parseFloat(valorMatch[1].replace(',', '.'));
@@ -467,7 +409,6 @@ async function handleDinheiro(sessao, mensagem) {
   return `💵 Por favor, informe o valor da nota para calcularmos o troco.\n\nExemplo: *50* ou *100*\n\nOu digite *não* se tiver trocado.`;
 }
 
-// Gerar texto completo do pedido
 function gerarTextoCompleto(sessao) {
   let texto = 'Pedido via WhatsApp:\n\n';
   texto += 'Produtos:\n';
@@ -489,12 +430,10 @@ function gerarTextoCompleto(sessao) {
   return texto;
 }
 
-// Finalizar pedido e salvar no banco
 async function finalizarPedido(sessao) {
   try {
     const { ESTADOS } = require('./chatbot-flow');
     
-    // Validação final dos itens do pedido
     const itensValidados = (sessao.pedido.produtos || []).map((p, idx) => ({
       id: idx.toString(),
       productId: p.produtoId,
@@ -503,13 +442,11 @@ async function finalizarPedido(sessao) {
       price: typeof p.preco === 'number' && p.preco > 0 ? p.preco : 0
     })).filter(p => p.productId && p.name && p.price > 0);
 
-    // Calcular total validado
     let totalValidado = 0;
     itensValidados.forEach(p => {
       totalValidado += p.price * p.quantity;
     });
 
-    // Criar pedido no banco
     const pedidoData = {
       nome: sessao.nomeCliente || 'Cliente WhatsApp',
       telefone: sessao.telefone,
@@ -538,21 +475,17 @@ async function finalizarPedido(sessao) {
         _id: Date.now().toString(),
         ...pedidoData
       };
-      // Salvar em memória se MongoDB não disponível
       console.log('📝 Pedido salvo em memória:', pedido._id);
     }
 
-    // Emitir evento para painel em tempo real
     if (this.io) {
       this.io.emit('novo-pedido', pedido);
     }
 
     console.log('✅ Pedido finalizado:', pedido._id);
 
-    // Atualizar estado
     this.atualizarEstado(sessao, ESTADOS.FINALIZADO);
 
-    // Mensagem de sucesso
     let msg = `🎉 *PEDIDO CONFIRMADO!*\n\n`;
     msg += `📝 Número do pedido: #${pedido._id.toString().slice(-6)}\n\n`;
     msg += `⏱ Status: *Aguardando preparo*\n\n`;
@@ -572,7 +505,6 @@ async function finalizarPedido(sessao) {
 
     this.salvarHistorico(sessao, 'bot', msg);
 
-    // Limpar sessão
     this.limparSessao(sessao.telefone);
 
     return msg;
@@ -582,17 +514,13 @@ async function finalizarPedido(sessao) {
   }
 }
 
-// Handler: Estado mostrando_cardapio
 async function handleCardapio(sessao, mensagem, nlp) {
-  // Se pedir cardápio novamente, mostra o cardápio
   if (nlp.intent === 'ver_cardapio' || mensagem.toLowerCase().trim() === 'cardápio') {
     return await this.mostrarCardapio(sessao);
   }
-  // Se enviar produto, redireciona para coleta de produtos
   return await this.handleColetaProdutos(sessao, mensagem, nlp);
 }
 
-// Exportar handlers adicionais
 module.exports = {
   handleColetaProdutos,
   handleCardapio,

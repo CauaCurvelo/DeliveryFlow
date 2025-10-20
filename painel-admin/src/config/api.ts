@@ -1,3 +1,2 @@
-// Configuração centralizada da API
 export const API_URL = 'http://localhost:4000';
 export const SOCKET_URL = 'http://localhost:4000';

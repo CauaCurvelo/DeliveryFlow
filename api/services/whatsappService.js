@@ -121,7 +121,6 @@ class WhatsAppService {
       }
     }
 
-    // Limpar todos os timeouts
     if (this.qrCodeTimeout) {
       clearTimeout(this.qrCodeTimeout);
       this.qrCodeTimeout = null;
@@ -147,7 +146,6 @@ class WhatsAppService {
       qrCount += 1;
       qrReceived = true;
       
-      // Limpar timeout anterior
       if (this.qrCodeTimeout) {
         clearTimeout(this.qrCodeTimeout);
       }
@@ -166,7 +164,6 @@ class WhatsAppService {
       logStep(`QR Code gerado (tentativa ${qrCount})`);
       this.io.emit('whatsapp-qr', qr);
 
-      // Timeout de 60 segundos para o QR Code
       this.qrCodeTimeout = setTimeout(() => {
         if (!this.whatsappReady && qrCount >= 3) {
           console.log('⏰ Timeout do QR Code após 3 tentativas. Reiniciando...');
@@ -176,7 +173,6 @@ class WhatsAppService {
     });
 
     this.client.on('authenticated', () => {
-      // Limpar timeout do QR Code
       if (this.qrCodeTimeout) {
         clearTimeout(this.qrCodeTimeout);
         this.qrCodeTimeout = null;
@@ -231,7 +227,6 @@ class WhatsAppService {
       logStep('Falha na autenticação');
       this.io.emit('whatsapp-auth-failure', msg);
       
-      // Limpar sessão e tentar novamente
       this.initializationAttempts++;
       if (this.initializationAttempts < this.maxInitializationAttempts) {
         console.log(`🔄 Tentativa ${this.initializationAttempts} de ${this.maxInitializationAttempts}...`);
@@ -262,7 +257,6 @@ class WhatsAppService {
       logStep('WhatsApp desconectado');
       this.io.emit('whatsapp-disconnected', reason);
       
-      // Tentar reconectar automaticamente
       setTimeout(() => {
         console.log('🔄 Tentando reconectar...');
         this.reconnect();
@@ -274,7 +268,6 @@ class WhatsAppService {
       logStep(`Carregando WhatsApp: ${percent}% - ${message}`);
       this.io.emit('whatsapp-loading', { percent, message });
       
-      // Se ficar preso em "sincronizando" por muito tempo, reconectar
       if (message.toLowerCase().includes('sincronizando') || message.toLowerCase().includes('syncing')) {
         if (this.syncTimeout) {
           clearTimeout(this.syncTimeout);
