@@ -33,6 +33,13 @@ function App() {
       transports: ['polling', 'websocket'],
       reconnection: true,
       reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+    });
+
+    socketInstance.on('connect_error', (error) => {
+      console.error('❌ Erro ao conectar ao servidor:', error);
+      setIsConnected(false);
+      toast.error('Não foi possível conectar ao servidor. Certifique-se de que a API está rodando na porta 3000.');
     });
 
     socketInstance.on('connect', () => {
@@ -108,6 +115,13 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex transition-colors">
       <Toaster position="top-right" richColors />
+      
+      {/* Banner de aviso quando API não está rodando */}
+      {!isConnected && (
+        <div className="fixed top-0 left-0 right-0 z-40 bg-red-600 text-white px-4 py-3 text-center text-sm font-medium">
+          ⚠️ API não está rodando! Certifique-se de iniciar o backend na pasta "api" executando: <code className="bg-red-700 px-2 py-1 rounded">cd api && npm start</code>
+        </div>
+      )}
       
       {whatsappQR && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
