@@ -42,7 +42,7 @@ function App() {
 
   useEffect(() => {
     document.documentElement.classList.add('dark');
-    fetch('http://localhost:3000/api/config/tables')
+    fetch('http://localhost:4000/api/config/tables')
       .then(res => res.json())
       .then(data => {
         if (data.totalTables) {
@@ -51,7 +51,7 @@ function App() {
       })
       .catch(err => console.log('Usando 20 mesas como padrão'));
     
-    fetch('http://localhost:3000/api/config/delivery')
+    fetch('http://localhost:4000/api/config/delivery')
       .then(res => res.json())
       .then(data => {
         if (data.taxaEntrega !== undefined) {
@@ -69,7 +69,7 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/produtos');
+      const response = await fetch('http://localhost:4000/api/produtos');
       const data = await response.json();
       setProducts(data.filter((p: Product) => p.ativo));
     } catch (error) {
@@ -134,7 +134,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/pedidos', {
+      const response = await fetch('http://localhost:4000/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),

@@ -20,7 +20,7 @@ npm install
 cd api
 npm start
 ```
-⏳ **Aguarde a mensagem "Backend rodando em http://localhost:3000"**
+⏳ **Aguarde a mensagem "✅ Backend rodando em http://localhost:4000"**
 
 **2. Terminal 2 - Painel Admin:**
 ```bash
@@ -37,7 +37,7 @@ npm run dev
 **Acesse:**
 - Painel Admin: http://localhost:5173
 - Painel Cliente: http://localhost:5174
-- API: http://localhost:3000
+- API: http://localhost:4000
 
 ## 📱 Conectar WhatsApp
 Abra o Painel Admin e escaneie o QR Code que aparece na tela.
