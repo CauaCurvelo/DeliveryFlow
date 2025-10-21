@@ -4,6 +4,7 @@ import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Users, Trash2, Phone, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_URL } from '../config/api';
 
 interface ClientesProps {
   socket: Socket | null;
@@ -22,7 +23,6 @@ export default function Clientes({ }: ClientesProps) {
 
   const fetchClientes = async () => {
     try {
-      const API_URL = 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/clientes`);
       const data = await res.json();
       setClientes(data.sort((a: Cliente, b: Cliente) => 
@@ -44,7 +44,6 @@ export default function Clientes({ }: ClientesProps) {
     if (!confirm('Tem certeza que deseja excluir este cliente?')) return;
     
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/clientes/${id}`, {
         method: 'DELETE',
       });

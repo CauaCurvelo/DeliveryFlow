@@ -8,6 +8,7 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Clock, CheckCircle, XCircle, AlertCircle, Package as PackageIcon, Edit2, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_URL } from '../config/api';
 
 interface PedidosProps {
   socket: Socket | null;
@@ -44,7 +45,6 @@ export default function Pedidos({ socket }: PedidosProps) {
 
   const fetchPedidos = async () => {
     try {
-      const API_URL = 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/pedidos`);
       const data = await res.json();
       setPedidos(data.sort((a: Pedido, b: Pedido) => 
@@ -78,7 +78,6 @@ export default function Pedidos({ socket }: PedidosProps) {
 
   const updateStatus = async (id: string, status: string) => {
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -98,7 +97,6 @@ export default function Pedidos({ socket }: PedidosProps) {
     }
 
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -117,7 +115,6 @@ export default function Pedidos({ socket }: PedidosProps) {
     if (!confirm('Tem certeza que deseja EXCLUIR permanentemente este pedido? Esta ação não pode ser desfeita!')) return;
     
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${id}`, {
         method: 'DELETE',
       });
@@ -159,7 +156,6 @@ export default function Pedidos({ socket }: PedidosProps) {
         return;
       }
 
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/pedidos/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

@@ -8,6 +8,7 @@ import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { Plus, Edit, Trash2, Package, X, Save } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_URL } from '../config/api';
 
 interface ProdutosProps {
   socket: Socket | null;
@@ -50,7 +51,6 @@ export default function Produtos({ socket }: ProdutosProps) {
 
   const fetchProdutos = async () => {
     try {
-      const API_URL = 'http://localhost:3000';
       const res = await fetch(`${API_URL}/api/produtos`);
       const data = await res.json();
       setProdutos(data);
@@ -100,7 +100,6 @@ export default function Produtos({ socket }: ProdutosProps) {
     };
 
     try {
-      const API_URL = 'http://localhost:3000';
       const url = editingId 
         ? `${API_URL}/api/produtos/${editingId}`
         : `${API_URL}/api/produtos`;
@@ -152,7 +151,6 @@ export default function Produtos({ socket }: ProdutosProps) {
     };
 
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/produtos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -181,7 +179,6 @@ export default function Produtos({ socket }: ProdutosProps) {
     if (!confirm('Tem certeza que deseja excluir este produto?')) return;
     
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/produtos/${id}`, {
         method: 'DELETE',
       });
@@ -194,7 +191,6 @@ export default function Produtos({ socket }: ProdutosProps) {
 
   const toggleAtivo = async (id: string, ativo: boolean) => {
     try {
-      const API_URL = 'http://localhost:3000';
       await fetch(`${API_URL}/api/produtos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

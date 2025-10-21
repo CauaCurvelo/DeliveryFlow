@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ShoppingBag, Package, Users, DollarSign, TrendingUp, Clock } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 interface DashboardProps {
   socket: Socket | null;
@@ -36,7 +37,6 @@ export default function Dashboard({ socket }: DashboardProps) {
 
   const fetchStats = async () => {
     try {
-      const API_URL = 'http://localhost:3000';
       const [pedidosRes, clientesRes, produtosRes] = await Promise.all([
         fetch(`${API_URL}/api/pedidos`),
         fetch(`${API_URL}/api/clientes`),
